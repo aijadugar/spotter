@@ -6,6 +6,8 @@ import sys
 import tempfile
 import unittest
 import urllib.error
+import io
+import logging
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
@@ -212,9 +214,8 @@ class ElevenLabsTests(unittest.TestCase):
         })
 
         from spotter.steps.speech_elevenlabs import ElevenLabsSynthesizer
-        with patch("urllib.request.urlopen", side_effect=mock_urlopen):
+        with patch("spotter.steps.speech_elevenlabs.urllib.request.urlopen", side_effect=mock_urlopen):
             with patch("time.sleep", side_effect=[0.1]):
-                from spotter.steps.speech_elevenlabs import ElevenLabsSynthesizer
                 synth = ElevenLabsSynthesizer()
                 result = synth.synthesize(
                     lines=["Test summary"],
@@ -295,7 +296,7 @@ class ElevenLabsTests(unittest.TestCase):
         # Pre-populate disk cache
         _CACHE_DIR.mkdir(parents=True, exist_ok=True)
         cache_key = _cache_key("Test summary", "test_voice", "eleven_flash_v2_5", "en")
-        Path("/tmp/spotter-tts-cache") / f"{cache_key}.mp3".write_bytes(b"cached_audio")
+        (Path("/tmp/spotter-tts-cache") / f"{cache_key}.mp3").write_bytes(b"cached_audio")
 
         from spotter.steps.speech_elevenlabs import ElevenLabsSynthesizer
         with patch("urllib.request.urlopen", side_effect=lambda url: self._make_mock_response(b"cached_audio")):
