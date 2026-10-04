@@ -98,15 +98,37 @@ EXPECTED_ARTIFACT_KEYS = {
         "what_you_did",
     ],
     "verification.json": ["checks", "notes", "passed"],
+    "progress_plan.json": [
+        "confidence_notes",
+        "encouragement",
+        "focus",
+        "next_session_cues",
+        "targets",
+    ],
+    "session_record.json": [
+        "aggregate_metrics",
+        "exercise",
+        "form_score",
+        "issue_counts",
+        "profile_key",
+        "rep_count",
+        "session_id",
+        "source_run_id",
+        "timestamp",
+    ],
+    "speech.json": ["audio_path", "backend", "language", "lines"],
     "final_report.json": [
         "artifacts",
         "coach_summary",
         "exercise",
         "issue_markers",
         "profile",
+        "progress_plan",
         "rep_analysis",
         "reps",
         "run_id",
+        "session_record",
+        "speech",
         "variation",
         "verification",
         "video_manifest",
@@ -120,8 +142,11 @@ class PipelineContractTests(unittest.TestCase):
         self.temp_dir = tempfile.TemporaryDirectory()
         self.original_runs_dir = pipeline.RUNS_DIR
         pipeline.RUNS_DIR = Path(self.temp_dir.name) / "runs"
+        self.original_db_path = pipeline.session_memory.DEFAULT_DB_PATH
+        pipeline.session_memory.DEFAULT_DB_PATH = Path(self.temp_dir.name) / "runs" / "history.db"
 
     def tearDown(self) -> None:
+        pipeline.session_memory.DEFAULT_DB_PATH = self.original_db_path
         pipeline.RUNS_DIR = self.original_runs_dir
         self.temp_dir.cleanup()
 
@@ -193,6 +218,9 @@ class PipelineContractTests(unittest.TestCase):
                 "issue_markers.json",
                 "coach_summary.json",
                 "verification.json",
+                "progress_plan.json",
+                "session_record.json",
+                "speech.json",
                 "final_report.json",
             ],
         )
@@ -238,7 +266,7 @@ class PipelineContractTests(unittest.TestCase):
         ]
         self.assertEqual(
             [event["step"] for event in done_events],
-            ["quality", "pose", "exercise", "reps", "issues", "render", "coach"],
+            ["quality", "pose", "exercise", "reps", "issues", "render", "coach", "memory", "plan"],
         )
         payload_by_step = {str(event["step"]): event.get("payload", {}) for event in done_events}
         self.assertEqual(payload_by_step["exercise"]["exercise"], "squat")
