@@ -1,0 +1,67 @@
+{
+  "cards": [
+    {
+      "card_id": "exercise:squat",
+      "card_type": "exercise",
+      "labels": ["squat"],
+      "title": "Squat",
+      "summary": "A squat summary should stay grounded in rep evidence while using standardized execution cues for depth, balance, torso position, and stance context.",
+      "evidence_rules": [
+        "Use rep analysis and issue markers instead of inferring directly from the video.",
+        "Describe squat depth, torso control, and balance only when supported by structured evidence.",
+        "Treat stance-width context as a valid variation unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Reference depth, torso control, and rep-to-rep consistency using the measured evidence.",
+        "Keep top fixes practical, such as controlling the descent or sitting slightly deeper when `shallow_depth` is present.",
+        "Keep language descriptive rather than diagnostic."
+      ],
+      "allowed_interpretations": [
+        "Target muscles commonly include quads and glutes, but coaching should remain focused on the observed movement evidence."
+      ],
+      "related_cards": ["issue:shallow_depth", "issue:excessive_torso_lean"]
+    },
+    {
+      "card_id": "exercise:push_up",
+      "card_type": "exercise",
+      "labels": ["push_up"],
+      "title": "Push-up",
+      "summary": "A push-up summary should explain body-line control, bottom depth, and rep consistency from structured evidence, while recognizing valid regressions and grip variations.",
+      "evidence_rules": [
+        "Treat hand placement or knee support as variation context when the variation detector marks them as not-issues.",
+        "Do not infer pain, fatigue causes, or joint pathology from the movement.",
+        "Use only the detected issue labels for correction language."
+      ],
+      "coaching_points": [
+        "Explain whether the body line stayed organized across the set before suggesting fixes.",
+        "If `hip_sag` or `incomplete_depth` appears, keep corrections specific to those labels.",
+        "Keep next-session advice simple and repeatable for the current goal."
+      ],
+      "allowed_interpretations": [
+        "Primary effort often involves chest, shoulders, and triceps, but the summary should still stay grounded in the measured rep evidence."
+      ],
+      "related_cards": ["variation:wide_grip_push_up", "variation:knee_push_up", "issue:hip_sag", "issue:incomplete_depth"]
+    },
+    {
+      "card_id": "exercise:shoulder_press",
+      "card_type": "exercise",
+      "labels": ["shoulder_press"],
+      "title": "Shoulder Press",
+      "summary": "A shoulder press summary should focus on top position, left-right symmetry, and rep consistency using structured evidence and standardized overhead pressing cues.",
+      "evidence_rules": [
+        "Use rep analysis and issue markers instead of diagnosing shoulder limitations.",
+        "Partial range can be valid variation context and should not be overcorrected by default.",
+        "Only describe asymmetry or incomplete lockout when those labels are present in JSON."
+      ],
+      "coaching_points": [
+        "Separate partial-range context from `incomplete_lockout` issue language.",
+        "Call out rep-to-rep symmetry drift only when the evidence shows it.",
+        "Keep the next-session plan limited to one or two repeatable priorities."
+      ],
+      "allowed_interpretations": [
+        "Primary effort often involves shoulders and triceps, but the coach summary must stay focused on observed rep evidence."
+      ],
+      "related_cards": ["issue:incomplete_lockout", "issue:asymmetry"]
+    }
+  ]
+}

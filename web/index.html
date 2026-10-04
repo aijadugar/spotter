@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#214f3a" />
+    <title>Spotter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/styles.css?v=20260614-modular-app" />
+  </head>
+  <body>
+    <button
+      id="large-text-toggle"
+      type="button"
+      style="position:fixed;top:12px;right:12px;z-index:1000;padding:6px 10px;font:600 14px system-ui;border:1px solid #214f3a;background:#fff;color:#214f3a;border-radius:6px;cursor:pointer"
+      title="Toggle larger text"
+    >
+      A+
+    </button>
+    <div id="root"></div>
+    <script>
+      document.getElementById("large-text-toggle").addEventListener("click", function () {
+        var root = document.documentElement;
+        root.style.fontSize = root.style.fontSize === "20px" ? "" : "20px";
+      });
+    </script>
+    <script type="module" src="/static/app.js?v=20260614-modular-app"></script>
+  </body>
+</html>

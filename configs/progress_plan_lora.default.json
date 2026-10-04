@@ -1,0 +1,14 @@
+{
+  "base_model": "nvidia/NVIDIA-Nemotron-3-Nano-4B-BF16",
+  "train_file": "data/sft/progress_plan_train.jsonl",
+  "eval_file": "data/sft/progress_plan_eval.jsonl",
+  "output_dir": "models/progress_plan_lora",
+  "lora_r": 16,
+  "lora_alpha": 32,
+  "lora_dropout": 0.05,
+  "learning_rate": 0.0002,
+  "num_train_epochs": 2,
+  "per_device_train_batch_size": 1,
+  "gradient_accumulation_steps": 8,
+  "max_seq_length": 2048
+}

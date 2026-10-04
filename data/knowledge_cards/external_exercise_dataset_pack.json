@@ -1,0 +1,782 @@
+{
+  "source_dataset": "DORTROX/Exercises-Data",
+  "generated_at": "2026-06-14T10:09:45.368287+00:00",
+  "normalized_exercise_count": 43,
+  "card_count": 43,
+  "cards": [
+    {
+      "card_id": "exercise:advancedtransitionlunge",
+      "card_type": "exercise",
+      "labels": [
+        "advancedtransitionlunge"
+      ],
+      "title": "Advancedtransitionlunge",
+      "summary": "A Advancedtransitionlunge summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:alignedsquat",
+      "card_type": "exercise",
+      "labels": [
+        "alignedsquat"
+      ],
+      "title": "Alignedsquat",
+      "summary": "A Alignedsquat summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:benddownandruninplace",
+      "card_type": "exercise",
+      "labels": [
+        "benddownandruninplace"
+      ],
+      "title": "Benddownandruninplace",
+      "summary": "A Benddownandruninplace summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:bulgariansplitsquat",
+      "card_type": "exercise",
+      "labels": [
+        "bulgariansplitsquat"
+      ],
+      "title": "Bulgariansplitsquat",
+      "summary": "A Bulgariansplitsquat summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:bulgariansquat",
+      "card_type": "exercise",
+      "labels": [
+        "bulgariansquat"
+      ],
+      "title": "Bulgariansquat",
+      "summary": "A Bulgariansquat summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:calfraise",
+      "card_type": "exercise",
+      "labels": [
+        "calfraise"
+      ],
+      "title": "Calfraise",
+      "summary": "A Calfraise summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:chairplank",
+      "card_type": "exercise",
+      "labels": [
+        "chairplank"
+      ],
+      "title": "Chairplank",
+      "summary": "A Chairplank summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:extendedplank",
+      "card_type": "exercise",
+      "labels": [
+        "extendedplank"
+      ],
+      "title": "Extendedplank",
+      "summary": "A Extendedplank summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:frontplank",
+      "card_type": "exercise",
+      "labels": [
+        "frontplank"
+      ],
+      "title": "Frontplank",
+      "summary": "A Frontplank summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:inclinedlunge",
+      "card_type": "exercise",
+      "labels": [
+        "inclinedlunge"
+      ],
+      "title": "Inclinedlunge",
+      "summary": "A Inclinedlunge summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:inclinelunge",
+      "card_type": "exercise",
+      "labels": [
+        "inclinelunge"
+      ],
+      "title": "Inclinelunge",
+      "summary": "A Inclinelunge summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:isometricsquat",
+      "card_type": "exercise",
+      "labels": [
+        "isometricsquat"
+      ],
+      "title": "Isometricsquat",
+      "summary": "A Isometricsquat summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:jumpingjack",
+      "card_type": "exercise",
+      "labels": [
+        "jumpingjack"
+      ],
+      "title": "Jumpingjack",
+      "summary": "A Jumpingjack summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:kneeraisecombinedwitharmlift",
+      "card_type": "exercise",
+      "labels": [
+        "kneeraisecombinedwitharmlift"
+      ],
+      "title": "Kneeraisecombinedwitharmlift",
+      "summary": "A Kneeraisecombinedwitharmlift summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:low_impactjumpingjacks",
+      "card_type": "exercise",
+      "labels": [
+        "low_impactjumpingjacks"
+      ],
+      "title": "Low Impactjumpingjacks",
+      "summary": "A Low Impactjumpingjacks summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:lowimpactheeltobutt",
+      "card_type": "exercise",
+      "labels": [
+        "lowimpactheeltobutt"
+      ],
+      "title": "Lowimpactheeltobutt",
+      "summary": "A Lowimpactheeltobutt summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:lowimpactjumpingjack",
+      "card_type": "exercise",
+      "labels": [
+        "lowimpactjumpingjack"
+      ],
+      "title": "Lowimpactjumpingjack",
+      "summary": "A Lowimpactjumpingjack summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:lunge",
+      "card_type": "exercise",
+      "labels": [
+        "lunge"
+      ],
+      "title": "Lunge",
+      "summary": "A Lunge summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:lunge",
+      "card_type": "exercise",
+      "labels": [
+        "lunge"
+      ],
+      "title": "Lunge",
+      "summary": "A Lunge summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:lungewithbalance",
+      "card_type": "exercise",
+      "labels": [
+        "lungewithbalance"
+      ],
+      "title": "Lungewithbalance",
+      "summary": "A Lungewithbalance summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:lungewithkneelift",
+      "card_type": "exercise",
+      "labels": [
+        "lungewithkneelift"
+      ],
+      "title": "Lungewithkneelift",
+      "summary": "A Lungewithkneelift summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:lungewithkneestrike",
+      "card_type": "exercise",
+      "labels": [
+        "lungewithkneestrike"
+      ],
+      "title": "Lungewithkneestrike",
+      "summary": "A Lungewithkneestrike summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:neutralalignedsquat",
+      "card_type": "exercise",
+      "labels": [
+        "neutralalignedsquat"
+      ],
+      "title": "Neutralalignedsquat",
+      "summary": "A Neutralalignedsquat summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:plantarraisecalf",
+      "card_type": "exercise",
+      "labels": [
+        "plantarraisecalf"
+      ],
+      "title": "Plantarraisecalf",
+      "summary": "A Plantarraisecalf summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:polifootwear",
+      "card_type": "exercise",
+      "labels": [
+        "polifootwear"
+      ],
+      "title": "Polifootwear",
+      "summary": "A Polifootwear summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:poliopensandcloses",
+      "card_type": "exercise",
+      "labels": [
+        "poliopensandcloses"
+      ],
+      "title": "Poliopensandcloses",
+      "summary": "A Poliopensandcloses summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:polishoe",
+      "card_type": "exercise",
+      "labels": [
+        "polishoe"
+      ],
+      "title": "Polishoe",
+      "summary": "A Polishoe summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:runninginplace",
+      "card_type": "exercise",
+      "labels": [
+        "runninginplace"
+      ],
+      "title": "Runninginplace",
+      "summary": "A Runninginplace summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:sideshuffle",
+      "card_type": "exercise",
+      "labels": [
+        "sideshuffle"
+      ],
+      "title": "Sideshuffle",
+      "summary": "A Sideshuffle summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:sinkwithbalance",
+      "card_type": "exercise",
+      "labels": [
+        "sinkwithbalance"
+      ],
+      "title": "Sinkwithbalance",
+      "summary": "A Sinkwithbalance summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:sky",
+      "card_type": "exercise",
+      "labels": [
+        "sky"
+      ],
+      "title": "Sky",
+      "summary": "A Sky summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:squat",
+      "card_type": "exercise",
+      "labels": [
+        "squat"
+      ],
+      "title": "Squat",
+      "summary": "A Squat summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:squat",
+      "card_type": "exercise",
+      "labels": [
+        "squat"
+      ],
+      "title": "Squat",
+      "summary": "A Squat summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:squatandlateralshif",
+      "card_type": "exercise",
+      "labels": [
+        "squatandlateralshif"
+      ],
+      "title": "Squatandlateralshif",
+      "summary": "A Squatandlateralshif summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:squatandraisearms",
+      "card_type": "exercise",
+      "labels": [
+        "squatandraisearms"
+      ],
+      "title": "Squatandraisearms",
+      "summary": "A Squatandraisearms summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:squatandtouchthefootmp4",
+      "card_type": "exercise",
+      "labels": [
+        "squatandtouchthefootmp4"
+      ],
+      "title": "Squatandtouchthefootmp4",
+      "summary": "A Squatandtouchthefootmp4 summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:squatwithbackwardlunge",
+      "card_type": "exercise",
+      "labels": [
+        "squatwithbackwardlunge"
+      ],
+      "title": "Squatwithbackwardlunge",
+      "summary": "A Squatwithbackwardlunge summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:squatwithinsistence2x",
+      "card_type": "exercise",
+      "labels": [
+        "squatwithinsistence2x"
+      ],
+      "title": "Squatwithinsistence2x",
+      "summary": "A Squatwithinsistence2x summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:stationaryrunning",
+      "card_type": "exercise",
+      "labels": [
+        "stationaryrunning"
+      ],
+      "title": "Stationaryrunning",
+      "summary": "A Stationaryrunning summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:stiffunilateral",
+      "card_type": "exercise",
+      "labels": [
+        "stiffunilateral"
+      ],
+      "title": "Stiffunilateral",
+      "summary": "A Stiffunilateral summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:sumosquat",
+      "card_type": "exercise",
+      "labels": [
+        "sumosquat"
+      ],
+      "title": "Sumosquat",
+      "summary": "A Sumosquat summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:sumosquat",
+      "card_type": "exercise",
+      "labels": [
+        "sumosquat"
+      ],
+      "title": "Sumosquat",
+      "summary": "A Sumosquat summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    },
+    {
+      "card_id": "exercise:unilateralsquat",
+      "card_type": "exercise",
+      "labels": [
+        "unilateralsquat"
+      ],
+      "title": "Unilateralsquat",
+      "summary": "A Unilateralsquat summary should stay grounded in structured rep evidence.",
+      "evidence_rules": [
+        "Use structured rep analysis and issue markers instead of inferring directly from raw video.",
+        "Treat valid detected variations as context unless issue markers show a separate problem."
+      ],
+      "coaching_points": [
+        "Keep the summary focused on repeatable setup and execution cues supported by the evidence."
+      ],
+      "allowed_interpretations": [],
+      "related_cards": []
+    }
+  ]
+}

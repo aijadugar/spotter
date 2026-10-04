@@ -1,0 +1,20 @@
+[
+  {
+    "file": "videos/router_demo_push_up_1.mp4",
+    "source_label": "push-up",
+    "router_label": "push_up",
+    "duration_sec": 5.005,
+    "fps": 29.97,
+    "resolution": "1920x1080",
+    "source_path": "/data/raw/riccio/Real-Time Exercise Recognition Dataset/final_kaggle_with_additional_video/push-up/push-up_1.mp4"
+  },
+  {
+    "file": "videos/router_demo_unknown_barbell_biceps_curl_1.mp4",
+    "source_label": "barbell biceps curl",
+    "router_label": "unknown",
+    "duration_sec": 3.804,
+    "fps": 29.97,
+    "resolution": "1920x1080",
+    "source_path": "/data/raw/riccio/Real-Time Exercise Recognition Dataset/final_kaggle_with_additional_video/barbell biceps curl/barbell biceps curl_1.mp4"
+  }
+]

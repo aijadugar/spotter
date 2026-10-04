@@ -1,0 +1,25 @@
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: "*"
+      run: uv run ruff check
+    requirements:
+      run: uv export --format requirements.txt --no-dev --no-hashes --frozen --quiet --output-file requirements.txt
+      files: echo requirements.txt
+      stage_fixed: true
+    test:
+      glob: "*"
+      run: uv run python -m unittest discover -s tests
+
+pre-push:
+  parallel: true
+  commands:
+    lint:
+      glob: "*"
+      run: uv run ruff check
+    requirements:
+      run: uv export --format requirements.txt --no-dev --no-hashes --frozen --quiet --output-file requirements.txt
+    test:
+      glob: "*"
+      run: uv run python -m unittest discover -s tests
