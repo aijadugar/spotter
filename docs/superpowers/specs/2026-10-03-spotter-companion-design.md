@@ -2,7 +2,7 @@
 
 - Status: design approved; spec under review
 - Date: 2026-10-03
-- Base repo: Spotter (`build-small-hackathon/Pozify`, cloned locally to `spotter/`)
+- Base repo: Spotter (`build-small-hackathon/Spotter`, cloned locally to `spotter/`)
 - Working title: Spotter Companion
 
 ## 1. Summary
