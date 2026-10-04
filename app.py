@@ -110,6 +110,7 @@ def config() -> dict[str, Any]:
         "exercises": ["auto", *USER_SELECTABLE_EXERCISES],
         "limitations": ["wrist_discomfort", "knee_discomfort", "shoulder_discomfort"],
         "equipment": ["bodyweight", "dumbbell", "barbell", "unknown"],
+        "languages": ["en", "hi", "mr"],
     }
 
 
@@ -506,6 +507,8 @@ async def analyze_api(
     limitations: str = Form(default="[]"),
     equipment: str = Form(default="bodyweight"),
     bypass_verifier: str = Form(default="true"),
+    voice_coach: str = Form(default="false"),
+    tts_language: str = Form(default="en"),
 ) -> dict[str, Any]:
     profile = _profile_input(
         goal=goal,
@@ -521,6 +524,8 @@ async def analyze_api(
             video_path,
             profile,
             _parse_bool_form(bypass_verifier),
+            voice_coach=_parse_bool_form(voice_coach),
+            tts_language=tts_language,
         )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=_friendly_error(exc)) from exc
@@ -541,6 +546,8 @@ async def analyze_stream_api(
     limitations: str = Form(default="[]"),
     equipment: str = Form(default="bodyweight"),
     bypass_verifier: str = Form(default="true"),
+    voice_coach: str = Form(default="false"),
+    tts_language: str = Form(default="en"),
 ) -> StreamingResponse:
     profile = _profile_input(
         goal=goal,
@@ -560,6 +567,8 @@ async def analyze_stream_api(
                 profile,
                 _parse_bool_form(bypass_verifier),
                 events.put,
+                voice_coach=_parse_bool_form(voice_coach),
+                tts_language=tts_language,
             )
             events.put({"type": "complete", "result": _analysis_response(result)})
         except Exception as exc:  # pragma: no cover - surfaced to browser clients

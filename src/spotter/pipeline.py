@@ -66,6 +66,8 @@ def run_pipeline(
     mock: bool | None = None,
     bypass_verifier: bool | None = None,
     progress: ProgressCallback | None = None,
+    voice_coach: bool = False,
+    tts_language: str = "en",
 ) -> dict[str, Any]:
     load_local_env()
     mock_mode = _env_mock_mode(video_path) if mock is None else mock
@@ -365,7 +367,12 @@ def run_pipeline(
 
     lines = speech.build_speech_lines(summary, plan)
     speech_result = speech.get_speech_synthesizer().synthesize(
-        lines, language=speech.default_language(), out_dir=run_dir
+        lines,
+        language=speech.default_language(),
+        out_dir=run_dir,
+        summary=summary,
+        plan=plan,
+        issues=issues.issues,
     )
     write_artifact("speech.json", speech_result)
 

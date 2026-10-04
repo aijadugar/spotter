@@ -177,6 +177,10 @@ class SpeechResult:
     language: str
     lines: list[str]
     backend: str
+    briefing_audio_path: str | None = None
+    cues: list[dict[str, Any]] | None = None
+    chars_used: int = 0
+    chars_skipped: int = 0
 
 
 def to_dict(value: Any) -> Any:
@@ -618,6 +622,24 @@ def _validate_speech_result(value: Any, path: str) -> None:
     _require_type(payload["language"], str, f"{path}.language")
     _require_string_list(payload["lines"], f"{path}.lines")
     _require_type(payload["backend"], str, f"{path}.backend")
+    # Optional new fields
+    if "briefing_audio_path" in payload and payload["briefing_audio_path"] is not None:
+        _require_type(payload["briefing_audio_path"], str, f"{path}.briefing_audio_path")
+    if "cues" in payload and payload["cues"] is not None:
+        _require_type(payload["cues"], list, f"{path}.cues")
+        for i, cue in enumerate(payload["cues"]):
+            cue_path = f"{path}.cues[{i}]"
+            _require_mapping(cue, cue_path)
+            _require_fields(cue, {"issue_id", "rep_number", "text", "audio_path"}, cue_path)
+            _require_type(cue["issue_id"], str, f"{cue_path}.issue_id")
+            _require_int(cue["rep_number"], f"{cue_path}.rep_number", minimum=1)
+            _require_type(cue["text"], str, f"{cue_path}.text")
+            if cue["audio_path"] is not None:
+                _require_type(cue["audio_path"], str, f"{cue_path}.audio_path")
+    if "chars_used" in payload:
+        _require_int(payload["chars_used"], f"{path}.chars_used", minimum=0)
+    if "chars_skipped" in payload:
+        _require_int(payload["chars_skipped"], f"{path}.chars_skipped", minimum=0)
 
 
 def _validate_final_report(value: Any, path: str) -> None:

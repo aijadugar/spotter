@@ -2534,6 +2534,59 @@ td {
   line-height: 1.35;
 }
 
+.voice-coach-section {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid rgba(245, 242, 232, 0.14);
+  border-radius: var(--radius);
+  background: rgba(245, 242, 232, 0.06);
+}
+
+.voice-coach-section h4 {
+  margin: 0 0 8px;
+  color: var(--paper);
+  font-size: 0.92rem;
+}
+
+.voice-coach-hint {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.voice-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(212, 255, 91, 0.38);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  color: var(--paper);
+  background: rgba(212, 255, 91, 0.08);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.voice-btn:hover {
+  border-color: rgba(212, 255, 91, 0.62);
+  background: rgba(212, 255, 91, 0.12);
+}
+
+.voice-btn:focus-visible {
+  outline: 3px solid rgba(212, 255, 91, 0.25);
+  outline-offset: 2px;
+}
+
+.voice-icon {
+  font-size: 1rem;
+}
+
+.cue-btn {
+  margin-top: 4px;
+  font-size: 0.74rem;
+}
+
 @media (max-width: 720px) {
   .app {
     padding: 12px 10px 28px;

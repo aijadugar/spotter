@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Protocol
+from typing import Any, Protocol
 
 from spotter.contracts import CoachSummary, ProgressPlan, SpeechResult
 
@@ -12,7 +12,14 @@ DEFAULT_LANGUAGE_ENV = "SPOTTER_TTS_LANGUAGE"
 
 class SpeechSynthesizer(Protocol):
     def synthesize(
-        self, lines: list[str], language: str, out_dir: Path
+        self,
+        lines: list[str],
+        language: str,
+        out_dir: Path,
+        *,
+        summary: CoachSummary | None = None,
+        plan: ProgressPlan | None = None,
+        issues: list[Any] | None = None,
     ) -> SpeechResult:
         ...
 
@@ -29,10 +36,24 @@ def build_speech_lines(summary: CoachSummary, plan: ProgressPlan) -> list[str]:
 
 class NullSpeechSynthesizer:
     def synthesize(
-        self, lines: list[str], language: str, out_dir: Path
+        self,
+        lines: list[str],
+        language: str,
+        out_dir: Path,
+        *,
+        summary: CoachSummary | None = None,
+        plan: ProgressPlan | None = None,
+        issues: list[Any] | None = None,
     ) -> SpeechResult:
-        del out_dir
-        return SpeechResult(audio_path=None, language=language, lines=lines, backend="none")
+        del out_dir, summary, plan, issues
+        return SpeechResult(
+            audio_path=None,
+            language=language,
+            lines=lines,
+            backend="none",
+            chars_used=0,
+            chars_skipped=0,
+        )
 
 
 def get_speech_synthesizer() -> SpeechSynthesizer:

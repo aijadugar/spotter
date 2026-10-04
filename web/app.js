@@ -317,6 +317,8 @@ function App() {
   const [error, setError] = useState("");
   const [progressSteps, setProgressSteps] = useState([]);
   const [demoClips, setDemoClips] = useState([]);
+  const [voiceCoach, setVoiceCoach] = useState(false);
+  const [ttsLanguage, setTtsLanguage] = useState("en");
 
   const previewUrl = useMemo(
     () => (file ? URL.createObjectURL(file) : ""),
@@ -399,6 +401,8 @@ function App() {
     payload.append("limitations", JSON.stringify(limitations));
     payload.append("equipment", equipment);
     payload.append("bypass_verifier", "true");
+    payload.append("voice_coach", voiceCoach ? "true" : "false");
+    payload.append("tts_language", ttsLanguage);
 
     try {
       const response = await fetch("/api/analyze/stream", {
@@ -590,6 +594,34 @@ function App() {
                 ),
               ),
             ),
+          ),
+        ),
+        h(
+          "div",
+          { className: "voice-coach-section" },
+          h("h4", null, "Voice coach (optional)"),
+          h("p", { className: "voice-coach-hint" }, "Text only is sent to ElevenLabs. Audio is cached locally."),
+          h(
+            "div",
+            { className: "form-grid" },
+            h(
+              "label",
+              { className: "check-chip" },
+              h("input", {
+                name: "voice_coach",
+                type: "checkbox",
+                checked: voiceCoach,
+                onChange: (e) => setVoiceCoach(e.target.checked),
+              }),
+              h("span", null, "Enable voice coach"),
+            ),
+            h(SelectField, {
+              labelText: "Language",
+              name: "tts_language",
+              value: ttsLanguage,
+              onChange: setTtsLanguage,
+              options: config.languages || ["en", "hi", "mr"],
+            }),
           ),
         ),
         h(

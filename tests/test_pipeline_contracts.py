@@ -116,7 +116,7 @@ EXPECTED_ARTIFACT_KEYS = {
         "source_run_id",
         "timestamp",
     ],
-    "speech.json": ["audio_path", "backend", "language", "lines"],
+    "speech.json": ["audio_path", "backend", "briefing_audio_path", "chars_skipped", "chars_used", "cues", "language", "lines"],
     "final_report.json": [
         "artifacts",
         "coach_summary",
