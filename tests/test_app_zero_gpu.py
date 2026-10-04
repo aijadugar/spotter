@@ -66,6 +66,7 @@ def _app_import_stubs() -> dict[str, types.ModuleType]:
     responses.FileResponse = _ObjectStub
     responses.HTMLResponse = _ObjectStub
     responses.StreamingResponse = _ObjectStub
+    responses.JSONResponse = _ObjectStub
 
     staticfiles = types.ModuleType("fastapi.staticfiles")
     staticfiles.StaticFiles = _ObjectStub
@@ -80,6 +81,16 @@ def _app_import_stubs() -> dict[str, types.ModuleType]:
 
     pipeline.run_pipeline = run_pipeline
 
+    # Add stubs for modules used in app.py
+    hf_spaces = types.ModuleType("spotter.hf_spaces")
+    hf_spaces.zero_gpu_enabled = lambda: False
+    hf_spaces.default_spaces_gpu_duration = lambda: 0
+    hf_spaces.spaces_gpu = _decorator_factory
+
+    session_memory = types.ModuleType("spotter.steps.session_memory")
+    session_memory.get_session_memory = lambda: None
+    session_memory.DEFAULT_DB_PATH = None
+
     return {
         "gradio": gradio,
         "fastapi": fastapi,
@@ -87,6 +98,8 @@ def _app_import_stubs() -> dict[str, types.ModuleType]:
         "fastapi.staticfiles": staticfiles,
         "spotter.exercise_catalog": exercise_catalog,
         "spotter.pipeline": pipeline,
+        "spotter.hf_spaces": hf_spaces,
+        "spotter.steps.session_memory": session_memory,
     }
 
 
