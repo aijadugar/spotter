@@ -61,7 +61,7 @@ class SlmProviderTests(unittest.TestCase):
             {
                 "SPACE_ID": "owner/space",
                 "SPOTTER_COACH_SUMMARY_LOCAL_MODEL_DIR": "/tmp/local-model",
-                "SPOTTER_COACH_SUMMARY_MODEL": "build-small-hackathon/spotter-coach-summary1",
+                "SPOTTER_COACH_SUMMARY_MODEL": "aijadugar/spotter-coach-summary1",
             },
             clear=True,
         ):
@@ -75,7 +75,7 @@ class SlmProviderTests(unittest.TestCase):
             {
                 "SPACE_ID": "owner/space",
                 "SPOTTER_COACH_SUMMARY_PROVIDER": "local_transformers",
-                "SPOTTER_COACH_SUMMARY_MODEL": "build-small-hackathon/spotter-coach-summary1",
+                "SPOTTER_COACH_SUMMARY_MODEL": "aijadugar/spotter-coach-summary1",
             },
             clear=True,
         ):
@@ -116,7 +116,7 @@ class SlmProviderTests(unittest.TestCase):
             os.environ,
             {
                 "SPACE_ID": "owner/space",
-                "SPOTTER_COACH_SUMMARY_MODEL": "build-small-hackathon/spotter-coach-summary1",
+                "SPOTTER_COACH_SUMMARY_MODEL": "aijadugar/spotter-coach-summary1",
             },
             clear=True,
         ):
@@ -161,7 +161,7 @@ class SlmProviderTests(unittest.TestCase):
             model = get_coach_summary_model()
 
         self.assertIsInstance(model, HFInferenceCoachSummaryModel)
-        self.assertEqual(model.model, "build-small-hackathon/spotter-coach-summary1")
+        self.assertEqual(model.model, "aijadugar/spotter-coach-summary1")
 
     def test_hf_inference_falls_back_to_text_generation_for_non_chat_model(self) -> None:
         class _TextGenerationClient:
@@ -177,7 +177,7 @@ class SlmProviderTests(unittest.TestCase):
 
         client = _TextGenerationClient()
         model = HFInferenceCoachSummaryModel(
-            model="build-small-hackathon/spotter-coach-summary1",
+            model="aijadugar/spotter-coach-summary1",
             max_tokens=123,
             temperature=0.2,
         )
@@ -186,13 +186,13 @@ class SlmProviderTests(unittest.TestCase):
         generation = model.generate_summary("coach prompt")
 
         self.assertEqual(generation.provider, "hf_inference")
-        self.assertEqual(generation.model, "build-small-hackathon/spotter-coach-summary1")
+        self.assertEqual(generation.model, "aijadugar/spotter-coach-summary1")
         self.assertEqual(generation.text, '{"summary":"ok"}')
         self.assertEqual(
             client.text_generation_kwargs,
             {
                 "prompt": "coach prompt",
-                "model": "build-small-hackathon/spotter-coach-summary1",
+                "model": "aijadugar/spotter-coach-summary1",
                 "max_new_tokens": 123,
                 "temperature": 0.2,
                 "return_full_text": False,
