@@ -3,7 +3,7 @@
 Status note:
 
 - This report is kept as the hackathon narrative document.
-- Current runtime defaults use `build-small-hackathon/pozify-coach-summary1`.
+- Current runtime defaults use `build-small-hackathon/spotter-coach-summary1`.
 - Current coach-summary training now includes a LoRA/merge/publish pipeline on Modal.
 - For the current operational commands, prefer [02-technical-setup.md](02-technical-setup.md) and
   [30-coach-modal-training.md](30-coach-modal-training.md).
@@ -57,7 +57,7 @@ pretending every video is one of the supported movements.
 | Pose extractor | MediaPipe Pose Landmarker Lite | Fast, practical feature extractor for a Gradio Space. |
 | Exercise router | Custom PyTorch BiLSTM | Tiny trainable temporal model over pose windows. |
 | Baseline router | scikit-learn HistGradientBoostingClassifier | Strong baseline over engineered vectors and fallback artifact. |
-| Coach summary | build-small-hackathon/pozify-coach-summary1 | Current default fine-tuned runtime for structured JSON explanation. |
+| Coach summary | build-small-hackathon/spotter-coach-summary1 | Current default fine-tuned runtime for structured JSON explanation. |
 | llama.cpp path | Nemotron-3-Nano-4B GGUF via `llama-server` | Local-first/off-grid coach summary path with GPU offload. |
 
 The original hackathon build trained the exercise router first and used Nemotron as a grounded
@@ -74,7 +74,7 @@ The main trained artifact is the Spotter exercise router:
 - input: 30-frame pose windows
 - per-frame features: 237
 - labels: `squat`, `push_up`, `shoulder_press`, `unknown`
-- published repo: `build-small-hackathon/pozify-exercise-router`
+- published repo: `build-small-hackathon/spotter-exercise-router`
 
 A scikit-learn baseline is also trained:
 
@@ -137,7 +137,7 @@ Reproduction command:
 ```bash
 uv run modal run scripts/exercise_router_modal.py \
   --stage all \
-  --repo-id build-small-hackathon/pozify-exercise-router
+  --repo-id build-small-hackathon/spotter-exercise-router
 ```
 
 Modal volumes:
