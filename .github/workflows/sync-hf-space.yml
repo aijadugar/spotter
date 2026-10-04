@@ -21,4 +21,4 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           test -n "$HF_TOKEN"
-          git push "https://tiena2cva:${HF_TOKEN}@huggingface.co/spaces/build-small-hackathon/Pozify" HEAD:main
+          git push "https://tiena2cva:${HF_TOKEN}@huggingface.co/spaces/build-small-hackathon/Spotter" HEAD:main
