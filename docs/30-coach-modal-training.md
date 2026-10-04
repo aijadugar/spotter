@@ -34,7 +34,7 @@ Important limitation:
 
 - Publishing a merged model repo to Hugging Face does **not** currently guarantee that the repo can
   be used through Hugging Face serverless `chat_completion`.
-- The current codebase defaults to `build-small-hackathon/pozify-coach-summary1` and falls back
+- The current codebase defaults to `build-small-hackathon/spotter-coach-summary1` and falls back
   from `chat_completion` to `text_generation` for non-chat model repos.
 - The most predictable fine-tuned path remains local inference through
   `SPOTTER_COACH_SUMMARY_LOCAL_MODEL_DIR`.
@@ -109,13 +109,13 @@ uv run modal run scripts/coach_summary_modal.py --stage merge
 ### 6. Publish the merged model
 
 ```bash
-uv run modal run scripts/coach_summary_modal.py --stage publish-merged --repo-id build-small-hackathon/pozify-coach-summary1
+uv run modal run scripts/coach_summary_modal.py --stage publish-merged --repo-id build-small-hackathon/spotter-coach-summary1
 ```
 
 ### Full end-to-end run
 
 ```bash
-uv run modal run scripts/coach_summary_modal.py --stage all --epochs 2 --style-weight 0.2 --repo-id build-small-hackathon/pozify-coach-summary1
+uv run modal run scripts/coach_summary_modal.py --stage all --epochs 2 --style-weight 0.2 --repo-id build-small-hackathon/spotter-coach-summary1
 ```
 
 ## Cheap Smoke-Test Workflow
@@ -150,7 +150,7 @@ The Modal model volume stores:
 ### Default fine-tuned runtime
 
 ```bash
-export SPOTTER_COACH_SUMMARY_MODEL=build-small-hackathon/pozify-coach-summary1
+export SPOTTER_COACH_SUMMARY_MODEL=build-small-hackathon/spotter-coach-summary1
 uv run python app.py
 ```
 
@@ -161,7 +161,7 @@ Download the merged repo or copy the merged directory locally, then:
 ```bash
 export SPOTTER_COACH_SUMMARY_LOCAL_MODEL_DIR=/path/to/merged_model
 export SPOTTER_COACH_SUMMARY_BASE_MODEL=nvidia/NVIDIA-Nemotron-3-Nano-4B-BF16
-export SPOTTER_COACH_SUMMARY_ADAPTER_ID=build-small-hackathon/pozify-coach-summary1
+export SPOTTER_COACH_SUMMARY_ADAPTER_ID=build-small-hackathon/spotter-coach-summary1
 uv run python app.py
 ```
 
