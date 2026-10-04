@@ -31,7 +31,7 @@ Read in this order if you want to understand and run the current project:
 
 ## Notes
 
-- Current coach-summary runtime default: `build-small-hackathon/pozify-coach-summary1`
+- Current coach-summary runtime default: `build-small-hackathon/spotter-coach-summary1`
 - The Hugging Face provider tries `chat_completion` first, then `text_generation` for non-chat
   model repos; local merged-model inference remains the most predictable fine-tuned path
 - Current app entrypoint and runtime options are documented in [02-technical-setup.md](02-technical-setup.md)
