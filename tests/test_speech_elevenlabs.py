@@ -1,13 +1,9 @@
 from __future__ import annotations
 
-import hashlib
 import json
 import sys
 import tempfile
 import unittest
-import urllib.error
-import io
-import logging
 from pathlib import Path
 from unittest.mock import patch
 
@@ -19,6 +15,11 @@ class ElevenLabsTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temp_dir = tempfile.TemporaryDirectory()
         self.out_dir = Path(self.temp_dir.name)
+        # Clear the disk cache before each test to ensure isolation
+        cache_dir = Path("/tmp/test_tts_cache")
+        if cache_dir.exists():
+            for f in cache_dir.iterdir():
+                f.unlink()
 
     def tearDown(self) -> None:
         self.temp_dir.cleanup()
@@ -226,7 +227,6 @@ class ElevenLabsTests(unittest.TestCase):
         cache_key = _cache_key("Test summary", "test_voice", "eleven_flash_v2_5", "en")
         (Path("/tmp/test_tts_cache") / f"{cache_key}.mp3").write_bytes(b"cached_audio")
 
-        from spotter.steps.speech_elevenlabs import ElevenLabsSynthesizer
         with patch.dict("os.environ", {"ELEVENLABS_API_KEY": "test_key", "ELEVENLABS_VOICE_ID": "test_voice"}, clear=True):
             with patch("spotter.steps.speech_elevenlabs._get_voice_id", return_value="test_voice"):
                 with patch("spotter.steps.speech_elevenlabs._get_cached_audio", return_value=Path("/tmp/test_tts_cache") / f"{cache_key}.mp3"):
