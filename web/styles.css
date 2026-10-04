@@ -2473,6 +2473,67 @@ td {
   }
 }
 
+.demo-section {
+  margin-bottom: 14px;
+}
+
+.demo-clips h3 {
+  margin: 0 0 8px;
+  color: var(--paper);
+  font-size: 0.92rem;
+}
+
+.demo-hint {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.demo-clip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.demo-clip {
+  display: grid;
+  gap: 6px;
+  border: 1px solid rgba(245, 242, 232, 0.14);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  color: var(--paper);
+  background: rgba(245, 242, 232, 0.07);
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+}
+
+.demo-clip:hover:not(:disabled) {
+  border-color: rgba(212, 255, 91, 0.38);
+  background: rgba(212, 255, 91, 0.08);
+  transform: translateY(-1px);
+}
+
+.demo-clip:focus-visible {
+  outline: 3px solid rgba(212, 255, 91, 0.25);
+  outline-offset: 2px;
+}
+
+.demo-clip:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.demo-clip strong {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.demo-desc {
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.35;
+}
+
 @media (max-width: 720px) {
   .app {
     padding: 12px 10px 28px;
