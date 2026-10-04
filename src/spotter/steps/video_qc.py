@@ -17,7 +17,7 @@ MIN_BRIGHTNESS = 45.0
 MIN_BLUR_LAPLACIAN_VAR = 50.0
 DEFAULT_SAMPLE_COUNT = 12
 
-HARD_FAILURE_WARNINGS = {"video_decode_failed"}
+HARD_FAILURE_WARNINGS = {"video_decode_failed", "too_short", "too_long"}
 
 
 def enable_capture_orientation(capture: cv2.VideoCapture) -> None:
