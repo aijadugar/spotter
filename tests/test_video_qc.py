@@ -108,7 +108,7 @@ class VideoQCTests(unittest.TestCase):
 
         manifest = video_qc.run(str(path))
 
-        self.assertTrue(manifest.analysis_allowed)
+        self.assertFalse(manifest.analysis_allowed)
         self.assertIn("too_short", manifest.quality_warnings)
         self.assertIn("fps_too_low", manifest.quality_warnings)
         self.assertIn("resolution_too_low", manifest.quality_warnings)
@@ -126,7 +126,7 @@ class VideoQCTests(unittest.TestCase):
             video_qc.MIN_DURATION_SEC = original_min_duration
             video_qc.MAX_DURATION_SEC = original_max_duration
 
-        self.assertTrue(manifest.analysis_allowed)
+        self.assertFalse(manifest.analysis_allowed)
         self.assertIn("too_long", manifest.quality_warnings)
 
     def test_dark_video_reports_warning(self) -> None:
