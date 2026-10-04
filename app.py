@@ -7,6 +7,7 @@ import re
 import sys
 import tempfile
 import threading
+import time
 from pathlib import Path
 from queue import Queue
 from threading import Thread
@@ -33,9 +34,9 @@ APP_DESCRIPTION = (
     "form-review report with structured artifacts."
 )
 
-# Demo clip cache: keyed by (clip file hash, profile dict) -> analysis response.
+# Demo clip cache: keyed by (clip file hash, profile dict, pipeline version) -> analysis response.
 # Disabled by default; set SPOTTER_DEMO_CACHE=0 to disable.
-_DEMO_CACHE: dict[tuple[str, str], dict[str, Any]] = {}
+_DEMO_CACHE: dict[tuple[str, str, str], dict[str, Any]] = {}
 _DEMO_CACHE_LOCK = threading.Lock()
 _DEMO_CACHE_ENABLED = os.getenv("SPOTTER_DEMO_CACHE", "1").strip().lower() not in {
     "0",
@@ -43,6 +44,37 @@ _DEMO_CACHE_ENABLED = os.getenv("SPOTTER_DEMO_CACHE", "1").strip().lower() not i
     "no",
     "off",
 }
+
+# Pipeline version for cache invalidation when model/code versions change
+_PIPELINE_VERSION = "20261004-v2"  # Increment when pipeline behavior changes
+
+
+def _warmup_models() -> None:
+    """Warm up ML models at server startup to avoid per-request cold starts."""
+    # Import here to avoid circular imports
+    from spotter.steps.pose_backends.registry import warmup_mediapipe
+    from spotter.ml.exercise_router_inference import load_router_model
+    from spotter.slm.providers import get_coach_summary_model
+    from spotter.steps.session_memory import get_session_memory
+    from spotter.steps.speech import get_speech_synthesizer
+
+    print("=== Warming up ML models at startup ===")
+    t0 = time.time()
+    warmup_mediapipe()
+    print(f"  MediaPipe pose ready: {time.time() - t0:.2f}s")
+    load_router_model()
+    print(f"  Router ready: {time.time() - t0:.2f}s")
+    get_coach_summary_model()
+    print(f"  Coach model ready: {time.time() - t0:.2f}s")
+    get_session_memory()
+    print(f"  Session memory ready: {time.time() - t0:.2f}s")
+    get_speech_synthesizer()
+    print(f"  Speech ready: {time.time() - t0:.2f}s")
+    print(f"=== Total warmup: {time.time() - t0:.2f}s ===")
+
+
+# Run warmup at module import (server startup)
+_warmup_models()
 
 
 server = gr.Server(
@@ -158,13 +190,13 @@ async def demo_analyze(clip_id: str) -> Any:
     return response
 
 
-def _demo_cache_key(clip_path: Path, profile: dict[str, Any]) -> tuple[str, str]:
+def _demo_cache_key(clip_path: Path, profile: dict[str, Any]) -> tuple[str, str, str]:
     digest = hashlib.sha256()
     with clip_path.open("rb") as handle:
         for chunk in iter(lambda: handle.read(65536), b""):
             digest.update(chunk)
     profile_key = json.dumps(profile, sort_keys=True, separators=(",", ":"))
-    return digest.hexdigest(), profile_key
+    return digest.hexdigest(), profile_key, _PIPELINE_VERSION
 
 
 async def _run_demo_pipeline(video_path: str) -> dict[str, Any]:
@@ -209,12 +241,19 @@ def _friendly_error(exc: Exception) -> str:
             "No person was clearly visible in this clip. Try a video where the "
             "whole body is in frame, shot from the side, with good lighting."
         )
-    if "timeout" in lowered or "timed out" in lowered:
+    if "too_short" in lowered or "video too short" in lowered or "duration" in lowered and "short" in lowered:
         return (
-            "The analysis took too long and was stopped. Try a shorter clip "
-            "(under 60 seconds) and run it again."
+            "The video is too short (minimum 10 seconds). Record a longer clip and try again."
         )
-    if "unsupported" in lowered or "unknown" in lowered:
+    if "too_long" in lowered or "video too long" in lowered or "duration" in lowered and "long" in lowered:
+        return (
+            "The video is too long (maximum 60 seconds). Trim the clip and try again."
+        )
+    if "video_decode_failed" in lowered or "decode" in lowered or "corrupt" in lowered or "unsupported format" in lowered:
+        return (
+            "The video file could not be decoded. Make sure it's a valid MP4/MOV/WebM file and try again."
+        )
+    if "unsupported" in lowered or "unknown" in lowered or "fallback_required" in lowered:
         return (
             "The router could not identify a supported exercise in this clip. "
             "Try a different angle or select the exercise manually."
@@ -227,6 +266,11 @@ def _friendly_error(exc: Exception) -> str:
         return (
             "The coach summary provider was unavailable, so Spotter used its "
             "deterministic fallback summary instead. The report is still complete."
+        )
+    if "timeout" in lowered or "timed out" in lowered:
+        return (
+            "The analysis took too long and was stopped. Try a shorter clip "
+            "(under 60 seconds) and run it again."
         )
     return (
         "Something went wrong while analyzing this clip. Try another video, "
