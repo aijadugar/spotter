@@ -293,7 +293,8 @@ def _predict_router_scores(
     windows: list[RouterWindow],
     model_dir: str,
 ) -> list[dict[str, float]]:
-    bundle = load_router_model(Path(model_dir))
+    # load_router_model is now a singleton loader; model_dir is kept for compat
+    bundle = load_router_model()
     if bundle is None:
         return []
     return predict_window_probabilities(bundle, windows)
