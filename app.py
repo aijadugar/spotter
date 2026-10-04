@@ -243,7 +243,7 @@ def _friendly_error(exc: Exception) -> str:
         )
     if "too_short" in lowered or "video too short" in lowered or "duration" in lowered and "short" in lowered:
         return (
-            "The video is too short (minimum 10 seconds). Record a longer clip and try again."
+            "The video is too short (minimum 3 seconds). Record a longer clip and try again."
         )
     if "too_long" in lowered or "video too long" in lowered or "duration" in lowered and "long" in lowered:
         return (

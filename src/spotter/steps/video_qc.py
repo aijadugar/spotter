@@ -8,7 +8,7 @@ import cv2
 from spotter.contracts import VideoManifest
 
 
-MIN_DURATION_SEC = 10.0
+MIN_DURATION_SEC = 3.0
 MAX_DURATION_SEC = 60.0
 MIN_FPS = 15.0
 MIN_WIDTH = 480

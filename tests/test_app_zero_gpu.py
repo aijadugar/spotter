@@ -144,6 +144,33 @@ class AppZeroGpuProgressTests(unittest.TestCase):
 
         self.assertEqual(result, {"source": "local"})
 
+    def test_friendly_error_model_download_failure(self) -> None:
+        with patch.dict(sys.modules, _app_import_stubs()):
+            app = _import_app_module()
+
+        exc = Exception("Model download failed: connection timeout")
+        result = app._friendly_error(exc)
+        self.assertIn("model download failed", result.lower())
+        self.assertIn("internet connection", result.lower())
+
+    def test_friendly_error_llm_provider_unavailable(self) -> None:
+        with patch.dict(sys.modules, _app_import_stubs()):
+            app = _import_app_module()
+
+        exc = Exception("Coach summary provider unavailable: rate limited")
+        result = app._friendly_error(exc)
+        self.assertIn("deterministic fallback", result.lower())
+        self.assertIn("report is still complete", result.lower())
+
+    def test_friendly_error_pipeline_timeout(self) -> None:
+        with patch.dict(sys.modules, _app_import_stubs()):
+            app = _import_app_module()
+
+        exc = TimeoutError("Pipeline timed out after 120 seconds")
+        result = app._friendly_error(exc)
+        self.assertIn("too long", result.lower())
+        self.assertIn("60 seconds", result.lower())
+
 
 if __name__ == "__main__":
     unittest.main()

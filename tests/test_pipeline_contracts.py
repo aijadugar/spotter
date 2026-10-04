@@ -398,8 +398,8 @@ class PipelineContractTests(unittest.TestCase):
             self.assertTrue(pipeline._env_mock_mode(None))
 
     def test_pipeline_rejects_too_short_video(self) -> None:
-        # Create a video shorter than MIN_DURATION_SEC (10s)
-        fixture = self._write_video("short.mp4", duration_sec=5.0)
+        # Create a video shorter than MIN_DURATION_SEC (3s)
+        fixture = self._write_video("short.mp4", duration_sec=2.0)
 
         with self.assertRaisesRegex(RuntimeError, "too_short"):
             pipeline.run_pipeline(video_path=str(fixture), profile_input=PROFILE_INPUT, mock=False)
