@@ -129,7 +129,7 @@ Every runtime model used by Spotter fits under the Build Small `32B` parameter c
 | Rep counting                | Exercise-specific state machines                 | Counts reps from movement signals without an LLM.                     |
 | Issue markers               | Transparent rules over per-rep metrics           | Separates valid variations from likely form issues.                   |
 | Coach-summary base          | `nvidia/NVIDIA-Nemotron-3-Nano-4B-BF16`          | Base model for coach-summary LoRA SFT.                                |
-| Coach summary               | `build-small-hackathon/pozify-coach-summary1`    | Fine-tuned model for grounded structured coaching output.             |
+| Coach summary               | `build-small-hackathon/spotter-coach-summary1`    | Fine-tuned model for grounded structured coaching output.             |
 | Local/off-grid summary path | Nemotron GGUF through `llama.cpp`                | Optional local runtime path for small-model inference.                |
 | Verifier                    | Deterministic grounding and safety checks        | Blocks unsupported issues, diagnosis language, and ungrounded claims. |
 
@@ -160,12 +160,12 @@ It also matches the broader Build Small philosophy:
 - Track: `Backyard AI`
 - Submission format: `Gradio Space`
 - Core user impact: affordable at-home workout feedback from short videos
-- Hugging Face Space: [build-small-hackathon/Pozify](https://huggingface.co/spaces/build-small-hackathon/Pozify)
-- Team repo: [tihado/Pozify](https://github.com/tihado/Pozify)
-- Router model repo: [build-small-hackathon/pozify-exercise-router](https://huggingface.co/build-small-hackathon/pozify-exercise-router)
-- Default coach-summary model: [build-small-hackathon/pozify-coach-summary-nemotron](https://huggingface.co/build-small-hackathon/pozify-coach-summary-nemotron)
-- Demo video: [Posify at build-small-hackathon 2026](https://www.youtube.com/watch?v=43Lx-Ia2B5U)
-- Social post: [Posify on Linkedin](https://www.linkedin.com/posts/buildsmallhackathon-huggingface-gradio-share-7472342687812186112-36ON/)
+- Hugging Face Space: [build-small-hackathon/Spotter](https://huggingface.co/spaces/build-small-hackathon/Spotter)
+- Team repo: [tihado/Spotter](https://github.com/tihado/Spotter)
+- Router model repo: [build-small-hackathon/spotter-exercise-router](https://huggingface.co/build-small-hackathon/spotter-exercise-router)
+- Default coach-summary model: [build-small-hackathon/spotter-coach-summary-nemotron](https://huggingface.co/build-small-hackathon/spotter-coach-summary-nemotron)
+- Demo video: [Spotter at build-small-hackathon 2026](https://www.youtube.com/watch?v=43Lx-Ia2B5U)
+- Social post: [Spotter on Linkedin](https://www.linkedin.com/posts/buildsmallhackathon-huggingface-gradio-share-7472342687812186112-36ON/)
 - Blog post: [Spotter: Small-Model Workout Form Review from Short Videos](https://tihado.com/blogs/introducing-pozify-build-small-hackathon/)
 
 Primary sponsor tools used in this build:
