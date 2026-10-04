@@ -13,7 +13,7 @@ import modal
 
 APP_NAME = "spotter-exercise-router"
 DATASET_ID = "RickyRiccio/Real_Time_Exercise_Recognition_Dataset"
-DEFAULT_HF_REPO_ID = "build-small-hackathon/spotter-exercise-router"
+DEFAULT_HF_REPO_ID = "aijadugar/spotter-exercise-router"
 HF_REPO_ID_ENV = "SPOTTER_ROUTER_HF_REPO_ID"
 HF_PRIVATE_ENV = "SPOTTER_ROUTER_HF_PRIVATE"
 DATA_ROOT = Path("/data")
