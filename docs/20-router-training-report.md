@@ -11,7 +11,7 @@ retained as a reference and fallback artifact.
 | Field                  | Value                                                                     |
 | ---------------------- | ------------------------------------------------------------------------- |
 | Modal run              | `https://modal.com/apps/nlag/main/ap-9CDLM3tMgOlCYE2JCBe71H`              |
-| Hugging Face repo      | `build-small-hackathon/pozify-exercise-router`                           |
+| Hugging Face repo      | `build-small-hackathon/spotter-exercise-router`                           |
 | Selected model         | `temporal.pt`                                                             |
 | Selected artifact      | `temporal.pt`                                                             |
 | Selection rule         | Prefer BiLSTM temporal when available; baseline falls back when missing   |
@@ -164,7 +164,7 @@ the local Modal volume artifacts.
 Run the full training, evaluation, and publish flow:
 
 ```bash
-uv run modal run scripts/exercise_router_modal.py --stage all --repo-id build-small-hackathon/pozify-exercise-router
+uv run modal run scripts/exercise_router_modal.py --stage all --repo-id build-small-hackathon/spotter-exercise-router
 ```
 
 Download the active artifact, baseline artifacts, selection file, and metrics after evaluation:
