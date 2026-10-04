@@ -84,14 +84,18 @@ def main() -> None:
 
     if args.dry_run:
         reference = {row["prompt"]: row["completion"] for row in rows}
-        generate = lambda prompt: reference[prompt]
+
+        def generate(prompt: str) -> str:
+            return reference[prompt]
     else:
         from spotter.slm.providers import get_coach_summary_model
 
         model = get_coach_summary_model()
         if model is None:
             raise SystemExit("No model configured. Set SPOTTER_COACH_SUMMARY_PROVIDER/MODEL.")
-        generate = lambda prompt: model.generate_summary(prompt).text
+
+        def generate(prompt: str) -> str:
+            return model.generate_summary(prompt).text
 
     report = evaluate_rows(rows, generate, label=args.label)
     out_dir = Path(args.out_dir)
