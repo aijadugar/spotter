@@ -227,6 +227,51 @@ end-to-end in mock mode against generated fixture videos, so it needs OpenCV and
 catches syntax errors across the whole tree, and `ruff check .` enforces the lint rules in
 `pyproject.toml`.
 
+## Optional voice coach
+
+The voice coach is an **opt-in** feature that sends only the final, verifier-approved text
+(summary + plan cues) to ElevenLabs for TTS. No video or personal data leaves your machine.
+The feature degrades silently to text-only if anything fails.
+
+Enable it with these env vars:
+
+```bash
+# Required
+ELEVENLABS_API_KEY=your_key_here
+
+# Optional (sensible defaults if omitted)
+ELEVENLABS_VOICE_ID=your_preferred_voice_id        # fetched from /v1/voices/search if unset
+ELEVENLABS_MODEL_ID=eleven_flash_v2_5              # lowest cost, supports Hindi + Marathi
+ELEVENLABS_OUTPUT_FORMAT=mp3_44100_128
+SPOTTER_TTS_LANGUAGE=en                            # en, hi, mr (model-dependent)
+SPOTTER_TTS_MAX_CHARS_PER_RUN=600                  # character budget per analysis
+SPOTTER_TTS_BACKEND=elevenlabs                     # set to enable
+```
+
+In the UI, toggle "Enable voice coach" in Session Setup and pick a language.
+On the results screen you'll see a "Play briefing" button and a speaker icon on each
+issue card for cue clips. Audio is cached locally (disk cache keyed by text+voice+model+language)
+so repeat runs cost zero characters.
+
+**Privacy note:** Only the grounded coach summary and plan cues (text, ~200-600 chars)
+are sent to ElevenLabs. Video never leaves your machine.
+
+**Costs:** The default model `eleven_flash_v2_5` is ~50% cheaper than `eleven_multilingual_v2`
+and supports Hindi and Marathi. At 600 chars/run, a few hundred runs stay well within
+the free tier.
+
+Example `.env` (copy to `.env` and fill in your key):
+
+```dotenv
+ELEVENLABS_API_KEY=
+ELEVENLABS_VOICE_ID=
+ELEVENLABS_MODEL_ID=eleven_flash_v2_5
+ELEVENLABS_OUTPUT_FORMAT=mp3_44100_128
+SPOTTER_TTS_LANGUAGE=en
+SPOTTER_TTS_MAX_CHARS_PER_RUN=600
+SPOTTER_TTS_BACKEND=elevenlabs
+```
+
 ## Contributors
 
 - 🚀 [@nvti](https://github.com/nvti)

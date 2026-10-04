@@ -66,12 +66,15 @@ def _app_import_stubs() -> dict[str, types.ModuleType]:
     responses.FileResponse = _ObjectStub
     responses.HTMLResponse = _ObjectStub
     responses.StreamingResponse = _ObjectStub
+    responses.JSONResponse = _ObjectStub
 
     staticfiles = types.ModuleType("fastapi.staticfiles")
     staticfiles.StaticFiles = _ObjectStub
 
     exercise_catalog = types.ModuleType("spotter.exercise_catalog")
     exercise_catalog.USER_SELECTABLE_EXERCISES = ["squat"]
+    exercise_catalog.EXERCISES = ["squat", "push_up", "shoulder_press"]
+    exercise_catalog.INTENDED_EXERCISES = ["squat", "push_up", "shoulder_press"]
 
     pipeline = types.ModuleType("spotter.pipeline")
 
@@ -80,6 +83,17 @@ def _app_import_stubs() -> dict[str, types.ModuleType]:
 
     pipeline.run_pipeline = run_pipeline
 
+    # Add stubs for modules used in app.py
+    hf_spaces = types.ModuleType("spotter.hf_spaces")
+    hf_spaces.zero_gpu_enabled = lambda: False
+    hf_spaces.default_spaces_gpu_duration = lambda: 0
+    hf_spaces.spaces_gpu = _decorator_factory
+    hf_spaces.router_torch_device = lambda: "cpu"
+
+    session_memory = types.ModuleType("spotter.steps.session_memory")
+    session_memory.get_session_memory = lambda: None
+    session_memory.DEFAULT_DB_PATH = None
+
     return {
         "gradio": gradio,
         "fastapi": fastapi,
@@ -87,6 +101,8 @@ def _app_import_stubs() -> dict[str, types.ModuleType]:
         "fastapi.staticfiles": staticfiles,
         "spotter.exercise_catalog": exercise_catalog,
         "spotter.pipeline": pipeline,
+        "spotter.hf_spaces": hf_spaces,
+        "spotter.steps.session_memory": session_memory,
     }
 
 
@@ -127,6 +143,33 @@ class AppZeroGpuProgressTests(unittest.TestCase):
             )
 
         self.assertEqual(result, {"source": "local"})
+
+    def test_friendly_error_model_download_failure(self) -> None:
+        with patch.dict(sys.modules, _app_import_stubs()):
+            app = _import_app_module()
+
+        exc = Exception("Model download failed: connection timeout")
+        result = app._friendly_error(exc)
+        self.assertIn("model download failed", result.lower())
+        self.assertIn("internet connection", result.lower())
+
+    def test_friendly_error_llm_provider_unavailable(self) -> None:
+        with patch.dict(sys.modules, _app_import_stubs()):
+            app = _import_app_module()
+
+        exc = Exception("Coach summary provider unavailable: rate limited")
+        result = app._friendly_error(exc)
+        self.assertIn("deterministic fallback", result.lower())
+        self.assertIn("report is still complete", result.lower())
+
+    def test_friendly_error_pipeline_timeout(self) -> None:
+        with patch.dict(sys.modules, _app_import_stubs()):
+            app = _import_app_module()
+
+        exc = TimeoutError("Pipeline timed out after 120 seconds")
+        result = app._friendly_error(exc)
+        self.assertIn("too long", result.lower())
+        self.assertIn("60 seconds", result.lower())
 
 
 if __name__ == "__main__":

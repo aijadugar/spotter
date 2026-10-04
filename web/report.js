@@ -26,6 +26,35 @@ function ReviewInsights({ result }) {
     "div",
     { className: "scan-insights", "aria-label": "Scan results" },
     h(
+      "div",
+      { className: "voice-controls" },
+      result.briefing_audio_path &&
+        h("button", {
+          className: "voice-btn",
+          onClick: () => {
+            const audio = new Audio(result.briefing_audio_path);
+            audio.play();
+          },
+        },
+        h("span", { className: "voice-icon" }, "🔊"),
+        h("span", null, "Play briefing")
+      ),
+      (result.cues || []).map((cue, index) =>
+        cue.audio_path &&
+          h("button", {
+            className: "voice-btn cue-btn",
+            key: index,
+            onClick: () => {
+              const audio = new Audio(cue.audio_path);
+              audio.play();
+              // TODO: Seek video to this cue's moment if timestamp data available
+            },
+          },
+          h("span", { className: "voice-icon" }, "🔊"),
+          h("span", null, `Cue ${index + 1}`)
+      ),
+    ),
+    h(
       "article",
       { className: "scan-insight" },
       h("span", null, "Movement"),

@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 import os
+import threading
 from typing import Any, Protocol
 import urllib.error
 import urllib.request
@@ -41,6 +42,27 @@ LLAMA_CPP_ALIASES = {
 }
 
 _LOCAL_TRANSFORMERS_CACHE: dict[str, tuple[Any, Any]] = {}
+_COACH_SUMMARY_SINGLETON: Any = None
+_COACH_SUMMARY_LOCK = threading.Lock()
+_COACH_SUMMARY_CONFIG_KEY: str | None = None
+
+
+def _coach_summary_config_key() -> str:
+    """Generate a cache key based on all env vars that affect model selection."""
+    parts = [
+        os.getenv(PROVIDER_ENV, DEFAULT_PROVIDER),
+        os.getenv(MODEL_ENV, DEFAULT_MODEL),
+        os.getenv(BASE_MODEL_ENV, ""),
+        os.getenv(LOCAL_MODEL_DIR_ENV, ""),
+        os.getenv(ADAPTER_ENV, ""),
+        os.getenv(DISABLE_REMOTE_ENV, ""),
+        os.getenv(MAX_TOKENS_ENV, "700"),
+        os.getenv(MAX_INPUT_TOKENS_ENV, str(DEFAULT_MAX_INPUT_TOKENS)),
+        os.getenv(TEMPERATURE_ENV, "0.1"),
+        os.getenv(LLAMA_CPP_BASE_URL_ENV, DEFAULT_LLAMA_CPP_BASE_URL),
+        os.getenv(LLAMA_CPP_TIMEOUT_ENV, "120.0"),
+    ]
+    return "|".join(parts)
 
 
 @dataclass(frozen=True)
@@ -473,49 +495,75 @@ class LlamaCppServerCoachSummaryModel:
 
 
 def get_coach_summary_model() -> CoachSummaryModel | None:
+    """Get coach summary model as a singleton, reloading only if config changes."""
+    global _COACH_SUMMARY_SINGLETON, _COACH_SUMMARY_CONFIG_KEY
     load_local_env()
 
-    local_model_dir = os.getenv(LOCAL_MODEL_DIR_ENV)
-    if local_model_dir:
-        return LocalTransformersCoachSummaryModel(
-            model=local_model_dir,
-            max_tokens=_env_int(MAX_TOKENS_ENV, 700),
-            max_input_tokens=_env_int(MAX_INPUT_TOKENS_ENV, DEFAULT_MAX_INPUT_TOKENS),
-            temperature=_env_float(TEMPERATURE_ENV, 0.0),
-            token=os.getenv(HF_TOKEN_ENV),
-            base_model=os.getenv(BASE_MODEL_ENV),
-            adapter_id=os.getenv(ADAPTER_ENV),
-        )
+    config_key = _coach_summary_config_key()
+    if _COACH_SUMMARY_SINGLETON is not None and _COACH_SUMMARY_CONFIG_KEY == config_key:
+        return _COACH_SUMMARY_SINGLETON
 
-    provider = _configured_provider()
-    if provider == "hf_inference":
+    with _COACH_SUMMARY_LOCK:
+        # Double-check after acquiring lock
+        if _COACH_SUMMARY_SINGLETON is not None and _COACH_SUMMARY_CONFIG_KEY == config_key:
+            return _COACH_SUMMARY_SINGLETON
+
+        local_model_dir = os.getenv(LOCAL_MODEL_DIR_ENV)
+        if local_model_dir:
+            _COACH_SUMMARY_SINGLETON = LocalTransformersCoachSummaryModel(
+                model=local_model_dir,
+                max_tokens=_env_int(MAX_TOKENS_ENV, 700),
+                max_input_tokens=_env_int(MAX_INPUT_TOKENS_ENV, DEFAULT_MAX_INPUT_TOKENS),
+                temperature=_env_float(TEMPERATURE_ENV, 0.0),
+                token=os.getenv(HF_TOKEN_ENV),
+                base_model=os.getenv(BASE_MODEL_ENV),
+                adapter_id=os.getenv(ADAPTER_ENV),
+            )
+            _COACH_SUMMARY_CONFIG_KEY = config_key
+            return _COACH_SUMMARY_SINGLETON
+
+        provider = _configured_provider()
+        if provider == "hf_inference":
+            if env_truthy(os.getenv(DISABLE_REMOTE_ENV)):
+                _COACH_SUMMARY_SINGLETON = None
+                _COACH_SUMMARY_CONFIG_KEY = config_key
+                return None
+            _COACH_SUMMARY_SINGLETON = HFInferenceCoachSummaryModel(
+                model=os.getenv(MODEL_ENV, DEFAULT_MODEL),
+                max_tokens=_env_int(MAX_TOKENS_ENV, 700),
+                temperature=_env_float(TEMPERATURE_ENV, 0.1),
+                token=os.getenv(HF_TOKEN_ENV),
+            )
+            _COACH_SUMMARY_CONFIG_KEY = config_key
+            return _COACH_SUMMARY_SINGLETON
+
+        if provider in LOCAL_TRANSFORMERS_ALIASES:
+            _COACH_SUMMARY_SINGLETON = LocalTransformersCoachSummaryModel(
+                model=os.getenv(MODEL_ENV, DEFAULT_MODEL),
+                max_tokens=_env_int(MAX_TOKENS_ENV, 700),
+                max_input_tokens=_env_int(MAX_INPUT_TOKENS_ENV, DEFAULT_MAX_INPUT_TOKENS),
+                temperature=_env_float(TEMPERATURE_ENV, 0.0),
+                token=os.getenv(HF_TOKEN_ENV),
+            )
+            _COACH_SUMMARY_CONFIG_KEY = config_key
+            return _COACH_SUMMARY_SINGLETON
+
+        if provider in LLAMA_CPP_ALIASES:
+            _COACH_SUMMARY_SINGLETON = LlamaCppServerCoachSummaryModel(
+                model=os.getenv(MODEL_ENV, DEFAULT_MODEL),
+                base_url=os.getenv(LLAMA_CPP_BASE_URL_ENV, DEFAULT_LLAMA_CPP_BASE_URL),
+                max_tokens=_env_int(MAX_TOKENS_ENV, 700),
+                temperature=_env_float(TEMPERATURE_ENV, 0.1),
+                timeout_sec=_env_float(LLAMA_CPP_TIMEOUT_ENV, 120.0),
+            )
+            _COACH_SUMMARY_CONFIG_KEY = config_key
+            return _COACH_SUMMARY_SINGLETON
+
         if env_truthy(os.getenv(DISABLE_REMOTE_ENV)):
+            _COACH_SUMMARY_SINGLETON = None
+            _COACH_SUMMARY_CONFIG_KEY = config_key
             return None
-        return HFInferenceCoachSummaryModel(
-            model=os.getenv(MODEL_ENV, DEFAULT_MODEL),
-            max_tokens=_env_int(MAX_TOKENS_ENV, 700),
-            temperature=_env_float(TEMPERATURE_ENV, 0.1),
-            token=os.getenv(HF_TOKEN_ENV),
-        )
 
-    if provider in LOCAL_TRANSFORMERS_ALIASES:
-        return LocalTransformersCoachSummaryModel(
-            model=os.getenv(MODEL_ENV, DEFAULT_MODEL),
-            max_tokens=_env_int(MAX_TOKENS_ENV, 700),
-            max_input_tokens=_env_int(MAX_INPUT_TOKENS_ENV, DEFAULT_MAX_INPUT_TOKENS),
-            temperature=_env_float(TEMPERATURE_ENV, 0.0),
-            token=os.getenv(HF_TOKEN_ENV),
-        )
-
-    if provider in LLAMA_CPP_ALIASES:
-        return LlamaCppServerCoachSummaryModel(
-            model=os.getenv(MODEL_ENV, DEFAULT_MODEL),
-            base_url=os.getenv(LLAMA_CPP_BASE_URL_ENV, DEFAULT_LLAMA_CPP_BASE_URL),
-            max_tokens=_env_int(MAX_TOKENS_ENV, 700),
-            temperature=_env_float(TEMPERATURE_ENV, 0.1),
-            timeout_sec=_env_float(LLAMA_CPP_TIMEOUT_ENV, 120.0),
-        )
-
-    if env_truthy(os.getenv(DISABLE_REMOTE_ENV)):
+        _COACH_SUMMARY_SINGLETON = None
+        _COACH_SUMMARY_CONFIG_KEY = config_key
         return None
-    return None

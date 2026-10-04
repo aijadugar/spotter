@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import threading
 from dataclasses import dataclass
 import json
 import os
@@ -69,24 +70,46 @@ class AggregatedRouterPrediction:
     score_margin: float
 
 
+_ROUTER_SINGLETON: RouterModelBundle | None = None
+_ROUTER_LOCK = threading.Lock()
+
+
+def get_router_singleton() -> RouterModelBundle | None:
+    """Return the cached router model if already loaded."""
+    return _ROUTER_SINGLETON
+
+
 def load_router_model(model_dir: Path = DEFAULT_MODEL_DIR) -> RouterModelBundle | None:
-    try:
-        hf_bundle = load_router_model_from_hf()
-    except Exception:
-        hf_bundle = None
-    if hf_bundle is not None:
-        return hf_bundle
+    """Load the router model, caching it as a module-level singleton."""
+    global _ROUTER_SINGLETON
+    if _ROUTER_SINGLETON is not None:
+        return _ROUTER_SINGLETON
 
-    selected_path = _selected_artifact_path(model_dir)
-    if selected_path is not None and selected_path.exists():
-        return load_router_model_file(selected_path)
+    with _ROUTER_LOCK:
+        if _ROUTER_SINGLETON is not None:
+            return _ROUTER_SINGLETON
 
-    for filename in MODEL_FILENAMES:
-        path = model_dir / filename
-        if not path.exists():
-            continue
-        return load_router_model_file(path)
-    return None
+        try:
+            hf_bundle = load_router_model_from_hf()
+        except Exception:
+            hf_bundle = None
+        if hf_bundle is not None:
+            _ROUTER_SINGLETON = hf_bundle
+            return _ROUTER_SINGLETON
+
+        selected_path = _selected_artifact_path(model_dir)
+        if selected_path is not None and selected_path.exists():
+            _ROUTER_SINGLETON = load_router_model_file(selected_path)
+            return _ROUTER_SINGLETON
+
+        for filename in MODEL_FILENAMES:
+            path = model_dir / filename
+            if not path.exists():
+                continue
+            _ROUTER_SINGLETON = load_router_model_file(path)
+            return _ROUTER_SINGLETON
+
+        return None
 
 
 def load_router_model_from_hf(

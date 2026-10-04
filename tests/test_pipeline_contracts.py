@@ -116,7 +116,7 @@ EXPECTED_ARTIFACT_KEYS = {
         "source_run_id",
         "timestamp",
     ],
-    "speech.json": ["audio_path", "backend", "language", "lines"],
+    "speech.json": ["audio_path", "backend", "briefing_audio_path", "chars_skipped", "chars_used", "cues", "language", "lines"],
     "final_report.json": [
         "artifacts",
         "coach_summary",
@@ -157,6 +157,7 @@ class PipelineContractTests(unittest.TestCase):
         fps: float = 30.0,
         duration_sec: float = 10.0,
         size: tuple[int, int] = (640, 480),
+        mode: str = "valid",
     ) -> Path:
         path = Path(self.temp_dir.name) / filename
         writer = cv2.VideoWriter(
@@ -167,17 +168,22 @@ class PipelineContractTests(unittest.TestCase):
         )
         self.assertTrue(writer.isOpened())
         width, height = size
-        for frame_index in range(int(fps * duration_sec)):
-            frame = np.full((height, width, 3), 130, dtype=np.uint8)
-            offset = frame_index % 120
-            cv2.rectangle(frame, (40 + offset, 80), (260 + offset, 300), (245, 245, 245), -1)
-            cv2.line(
-                frame,
-                (0, frame_index % height),
-                (width - 1, height - 1),
-                (20, 20, 20),
-                3,
-            )
+        for frame_index in range(max(1, int(fps * duration_sec))):
+            if mode == "dark":
+                frame = np.full((height, width, 3), 8, dtype=np.uint8)
+            elif mode == "blurry":
+                frame = np.full((height, width, 3), 150, dtype=np.uint8)
+            else:
+                frame = np.full((height, width, 3), 130, dtype=np.uint8)
+                offset = frame_index % 120
+                cv2.rectangle(frame, (40 + offset, 80), (260 + offset, 300), (245, 245, 245), -1)
+                cv2.line(
+                    frame,
+                    (0, frame_index % height),
+                    (width - 1, height - 1),
+                    (20, 20, 20),
+                    3,
+                )
             writer.write(frame)
         writer.release()
         return path
@@ -390,6 +396,56 @@ class PipelineContractTests(unittest.TestCase):
         with patch.dict(os.environ, {}, clear=True):
             self.assertFalse(pipeline._env_mock_mode("sample.mp4"))
             self.assertTrue(pipeline._env_mock_mode(None))
+
+    def test_pipeline_rejects_too_short_video(self) -> None:
+        # Create a video shorter than MIN_DURATION_SEC (3s)
+        fixture = self._write_video("short.mp4", duration_sec=2.0)
+
+        with self.assertRaisesRegex(RuntimeError, "too_short"):
+            pipeline.run_pipeline(video_path=str(fixture), profile_input=PROFILE_INPUT, mock=False)
+
+    def test_pipeline_rejects_too_long_video(self) -> None:
+        # Create a video longer than MAX_DURATION_SEC (60s)
+        fixture = self._write_video("long.mp4", duration_sec=70.0)
+
+        with self.assertRaisesRegex(RuntimeError, "too_long"):
+            pipeline.run_pipeline(video_path=str(fixture), profile_input=PROFILE_INPUT, mock=False)
+
+    def test_pipeline_rejects_corrupt_video(self) -> None:
+        # Write a corrupt file
+        corrupt_path = Path(self.temp_dir.name) / "corrupt.mp4"
+        corrupt_path.write_bytes(b"not a video file")
+
+        with self.assertRaisesRegex(RuntimeError, "video_decode_failed"):
+            pipeline.run_pipeline(video_path=str(corrupt_path), profile_input=PROFILE_INPUT, mock=False)
+
+    def test_pipeline_rejects_missing_video(self) -> None:
+        missing_path = Path(self.temp_dir.name) / "missing.mp4"
+
+        with self.assertRaisesRegex(RuntimeError, "video_decode_failed"):
+            pipeline.run_pipeline(video_path=str(missing_path), profile_input=PROFILE_INPUT, mock=False)
+
+    def test_pipeline_handles_unknown_exercise_real(self) -> None:
+        # With a real video that produces poor pose, classifier should return unknown
+        # Use a video with poor pose quality (all dark frames)
+        fixture = self._write_video("dark.mp4", mode="dark")
+
+        result = pipeline.run_pipeline(video_path=str(fixture), profile_input=PROFILE_INPUT, mock=False)
+        report = result["final_report"]
+        self.assertEqual(report["exercise"]["exercise"], "unknown")
+        self.assertTrue(report["exercise"]["fallback_required"])
+
+    def test_pipeline_handles_no_person_detected(self) -> None:
+        # Use mock pose backend but with no valid pose - this tests the real
+        # pipeline path with a video that produces no valid pose
+        fixture = self._write_video("blurry.mp4", mode="blurry")
+
+        result = pipeline.run_pipeline(video_path=str(fixture), profile_input=PROFILE_INPUT, mock=False)
+        # Should complete but with unknown exercise due to poor pose
+        report = result["final_report"]
+        # Video passes QC (just dark/blurry), so pipeline runs but classifier returns unknown
+        self.assertEqual(report["exercise"]["exercise"], "unknown")
+        self.assertTrue(report["exercise"]["fallback_required"])
 
 
 if __name__ == "__main__":
