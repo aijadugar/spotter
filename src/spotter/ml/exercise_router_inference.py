@@ -23,7 +23,7 @@ from spotter.ml.exercise_router_temporal import TorchTemporalRouter
 
 DEFAULT_MODEL_DIR = Path("models/exercise_router/active")
 ACTIVE_SELECTION_FILENAME = "router_selection.json"
-DEFAULT_HF_REPO_ID = "build-small-hackathon/spotter-exercise-router"
+DEFAULT_HF_REPO_ID = "aijadugar/spotter-exercise-router"
 HF_REPO_ID_ENV = "SPOTTER_ROUTER_HF_REPO_ID"
 HF_REVISION_ENV = "SPOTTER_ROUTER_HF_REVISION"
 HF_DISABLE_ENV = "SPOTTER_ROUTER_DISABLE_HF"
