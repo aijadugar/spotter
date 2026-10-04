@@ -45,8 +45,6 @@ qualified trainer, clinician, or physical therapist.
 
 This build is a practice companion. It is not a medical or fall-risk assessment tool.
 
-![Spotter product](https://tihado.com/images/pozify.webp)
-
 ## What Spotter Delivers
 
 For each uploaded workout clip, Spotter produces:
@@ -61,8 +59,6 @@ For each uploaded workout clip, Spotter produces:
 The supported exercise labels are `squat`, `push_up`, `shoulder_press`, and `unknown`. The `unknown`
 label is intentional: Spotter should reject unsupported or unclear clips instead of forcing every
 video into one of the supported movements.
-
-![Spotter coach intelligence](https://tihado.com/images/pozify-coach-intelligence.webp)
 
 ## Product Flow
 
@@ -166,7 +162,6 @@ It also matches the broader Build Small philosophy:
 - Default coach-summary model: [build-small-hackathon/spotter-coach-summary-nemotron](https://huggingface.co/build-small-hackathon/spotter-coach-summary-nemotron)
 - Demo video: [Spotter at build-small-hackathon 2026](https://www.youtube.com/watch?v=43Lx-Ia2B5U)
 - Social post: [Spotter on Linkedin](https://www.linkedin.com/posts/buildsmallhackathon-huggingface-gradio-share-7472342687812186112-36ON/)
-- Blog post: [Spotter: Small-Model Workout Form Review from Short Videos](https://tihado.com/blogs/introducing-pozify-build-small-hackathon/)
 
 Primary sponsor tools used in this build:
 
