@@ -127,6 +127,27 @@ def run_pipeline(
         analysis_allowed=manifest.analysis_allowed,
     )
 
+    # Hard failure checks: raise clear errors for real uploads. In mock mode
+    # (no video, test-only), the mock pose backend handles the missing video
+    # case, so we only enforce these checks when a real video was supplied.
+    if not manifest.analysis_allowed and not mock_mode:
+        failure_reasons = []
+        if "video_decode_failed" in manifest.quality_warnings:
+            failure_reasons.append("video_decode_failed: The video file could not be decoded.")
+        if "too_short" in manifest.quality_warnings:
+            failure_reasons.append("too_short: The video is too short (minimum 10 seconds).")
+        if "too_long" in manifest.quality_warnings:
+            failure_reasons.append("too_long: The video is too long (maximum 60 seconds).")
+        if "too_dark" in manifest.quality_warnings:
+            failure_reasons.append("too_dark: The video is too dark to analyze.")
+        if "too_blurry" in manifest.quality_warnings:
+            failure_reasons.append("too_blurry: The video is too blurry to analyze.")
+        if "fps_too_low" in manifest.quality_warnings:
+            failure_reasons.append("fps_too_low: The video frame rate is too low.")
+        if "resolution_too_low" in manifest.quality_warnings:
+            failure_reasons.append("resolution_too_low: The video resolution is too low.")
+        raise RuntimeError("; ".join(failure_reasons))
+
     emit(
         "pose",
         "active",
