@@ -23,7 +23,7 @@ ARTIFACT_FILENAMES = (
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Upload Spotter exercise-router artifacts to HF Hub.")
-    parser.add_argument("--repo-id", required=True, help="Hugging Face model repo id, e.g. user/pozify-exercise-router")
+    parser.add_argument("--repo-id", required=True, help="Hugging Face model repo id, e.g. user/spotter-exercise-router")
     parser.add_argument("--model-dir", type=Path, default=DEFAULT_MODEL_DIR)
     parser.add_argument("--model-card", type=Path, default=DEFAULT_MODEL_CARD)
     parser.add_argument("--training-report", type=Path, default=DEFAULT_TRAINING_REPORT)
