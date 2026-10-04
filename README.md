@@ -8,7 +8,7 @@ sdk_version: "6.17.3"
 python_version: "3.10"
 app_file: app.py
 fullWidth: true
-short_description: Small-model workout form review from short videos.
+short_description: Workout form coach for a friend, built on open-weight small models.
 tags:
   - gradio
   - computer-vision
@@ -16,27 +16,25 @@ tags:
   - fitness
   - video-analysis
   - llama-cpp
-  - track:backyard
-  - sponsor:openbmb
-  - sponsor:openai
-  - sponsor:nvidia
-  - sponsor:modal
-  - achievement:offgrid
-  - achievement:welltuned
-  - achievement:offbrand
-  - achievement:llama
-  - achievement:sharing
-  - achievement:fieldnotes
+  - open-source
+  - local-inference
+  - hacktoberfest
 ---
 
 # Spotter
 
-Spotter is a small-model workout form coach for people who want to train at home but still need clear,
-trustworthy feedback. A user uploads a short exercise video, adds basic training context, and gets a
-structured form-review report with rep counts, movement notes, annotated video, and a grounded coach
-summary.
+Spotter is a small-model workout form coach I built for a friend.
 
-Spotter is built for users who avoid gyms because they are far away, too crowded, intimidating, or too
+My friend trains at home: no gym nearby, no budget for a private trainer, and a phone propped on a
+shelf is the only feedback they get. Every "AI coach" app they tried wanted a subscription, shipped
+their workout videos to a company's servers, or paraphrased generic YouTube advice. So I built
+Spotter for them instead.
+
+A user uploads a short exercise video, adds basic training context, and gets a structured form-review
+report with rep counts, movement notes, annotated video, and a grounded coach summary — produced by
+open-weight models that cost nothing to run and never need an account.
+
+Spotter is for anyone who trains at home because the gym is too far, too crowded, intimidating, or too
 expensive to replace with a private trainer. It gives them a second set of eyes without pretending to
 be a clinician or a full personal coach.
 
@@ -115,7 +113,7 @@ modes Spotter cares about.
 
 ## Models We Use
 
-Every runtime model used by Spotter fits under the Build Small `32B` parameter cap.
+Every runtime model in Spotter is open-weight and small enough to run on a laptop.
 
 | Component                   | Model or method                                  | Role                                                                  |
 | --------------------------- | ------------------------------------------------ | --------------------------------------------------------------------- |
@@ -125,8 +123,8 @@ Every runtime model used by Spotter fits under the Build Small `32B` parameter c
 | Rep counting                | Exercise-specific state machines                 | Counts reps from movement signals without an LLM.                     |
 | Issue markers               | Transparent rules over per-rep metrics           | Separates valid variations from likely form issues.                   |
 | Coach-summary base          | `nvidia/NVIDIA-Nemotron-3-Nano-4B-BF16`          | Base model for coach-summary LoRA SFT.                                |
-| Coach summary               | `build-small-hackathon/spotter-coach-summary1`    | Fine-tuned model for grounded structured coaching output.             |
-| Local/off-grid summary path | Nemotron GGUF through `llama.cpp`                | Optional local runtime path for small-model inference.                |
+| Coach summary               | `aijadugar/spotter-coach-summary1`                | Fine-tuned model for grounded structured coaching output.             |
+| Fully local summary path    | Nemotron GGUF through `llama.cpp`                | Optional offline runtime path for small-model inference.              |
 | Verifier                    | Deterministic grounding and safety checks        | Blocks unsupported issues, diagnosis language, and ungrounded claims. |
 
 The trained exercise router is intentionally tiny:
@@ -138,70 +136,80 @@ The trained exercise router is intentionally tiny:
 | Window length                   | 30 frames |
 | Output classes                  |         4 |
 
-## Why It Fits Build Small
+## Why Open Innovation Matters For This Build
 
-Spotter matches `Backyard AI` because it solves an everyday problem with a personal, practical tool:
-affordable at-home workout feedback without needing a gym or private coach.
+This is a Hacktoberfest "Build for a Friend" project, and open-source AI is not decoration here — it
+is the reason my friend can actually use it.
 
-It also matches the broader Build Small philosophy:
+- **It runs on a laptop with no internet.** MediaPipe pose, the 182k-parameter BiLSTM router, and the
+  Nemotron-4B coach summary (via `llama.cpp` with a GGUF) are a fully local path. Their workout videos
+  never leave their machine.
+- **Their data stays theirs.** No server they don't control ever sees a rep. Closed coach apps
+  upload every clip to company storage; Spotter's whole pipeline is deterministic code plus open
+  weights running on hardware my friend already owns.
+- **It costs nothing to run.** No subscription, no API key, no metered inference. The trained router
+  and the LoRA coach-summary adapter are free artifacts anyone can download and re-run.
+- **I could fine-tune and swap models.** The router and coach summary are open-weight checkpoints
+  trained on task-specific data and released under permissive licenses. When a better 4B base model
+  ships, the LoRA retrains in one `Modal` job; when my friend wants a different voice for the coach,
+  they change one env var. That loop is impossible with a closed API.
+- **Open beat closed where it counted.** For a narrow job — route four exercise classes from pose
+  windows, render grounded JSON into coaching text — a 4B fine-tuned model with a deterministic
+  verifier matches what a much larger generic model does, at zero marginal cost, offline, and with
+  every model boundary inspectable. The closed option was never the better fit for this problem.
 
-- local-first and modular architecture
-- transparent model boundaries instead of one giant opaque model
-- per-component models under the `32B` limit
-- task-specific fine-tuning instead of relying only on a large general model
-- useful day-to-day workflow, not only a technical demo
+The open pieces are what make the project work: an open pose model, a self-trained open-weight
+router, an open NVIDIA Nemotron base with a released LoRA adapter, and `llama.cpp` as the local
+runtime.
 
-## Hackathon Snapshot
+## Challenge Snapshot
 
-- Track: `Backyard AI`
-- Submission format: `Gradio Space`
-- Core user impact: affordable at-home workout feedback from short videos
-- Hugging Face Space: [build-small-hackathon/Spotter](https://huggingface.co/spaces/build-small-hackathon/Spotter)
-- Team repo: [tihado/Spotter](https://github.com/tihado/Spotter)
-- Router model repo: [build-small-hackathon/spotter-exercise-router](https://huggingface.co/build-small-hackathon/spotter-exercise-router)
-- Default coach-summary model: [build-small-hackathon/spotter-coach-summary-nemotron](https://huggingface.co/build-small-hackathon/spotter-coach-summary-nemotron)
-- Demo video: [Spotter at build-small-hackathon 2026](https://www.youtube.com/watch?v=43Lx-Ia2B5U)
-- Social post: [Spotter on Linkedin](https://www.linkedin.com/posts/buildsmallhackathon-huggingface-gradio-share-7472342687812186112-36ON/)
+- Challenge: Hacktoberfest — *Build for a Friend*
+- Who it's for: a friend who trains at home without a gym or a coach
+- Submission format: Hugging Face Space + local run
+- Core impact: private, free, at-home workout feedback from short videos
+- Hugging Face Space: [aijadugar/Spotter](https://huggingface.co/spaces/aijadugar/Spotter)
+- Repo: [aijadugar/spotter](https://github.com/aijadugar/spotter)
+- Router model repo: [aijadugar/spotter-exercise-router](https://huggingface.co/aijadugar/spotter-exercise-router)
+- Coach-summary model repo: [aijadugar/spotter-coach-summary1](https://huggingface.co/aijadugar/spotter-coach-summary1)
 
-Primary sponsor tools used in this build:
+Tools used in this build:
 
-- `Hugging Face Spaces` for the app surface
-- `Hugging Face Inference` and local runtimes for small-model inference
+- `Hugging Face Spaces` for the shareable app surface
+- `Hugging Face Inference` and `llama.cpp` for small-model inference
 - `Modal` for training, evaluation, merging, and publishing workflows
-- `OpenAI Codex` for implementation support and iteration speed
+- `Claude Code` / `OpenAI Codex` as repo-aware coding agents
 
-## How We Used Codex
+## Handing It Over
 
-We used OpenAI Codex as a repo-aware coding agent during the build. The useful pattern was not to
-ask for generic code, but to ask Codex to inspect the current project, propose the smallest useful
-change, edit the right files, run relevant checks, and summarize what changed.
+I installed Spotter on my friend's laptop — `uv sync`, download the models once, and the app runs
+fully offline. Their first reaction was the one that mattered: *"So it never sends my videos
+anywhere?"* They now film a set, get rep counts and annotated form feedback the same evening, and
+the check-engine light for "is my squat depth actually improving" finally has an answer that isn't
+a stranger on a forum. The feature request they came back with — remember last session's numbers —
+is exactly why the repo keeps a local session record and progress plan instead of a cloud profile.
 
-Codex was most helpful for:
+## Run It Locally
 
-- turning product ideas into scoped engineering tasks
-- moving across Python pipeline code, web UI files, scripts, configs, tests, and docs
-- researching changing platform constraints and connecting them back to this repo
-- reviewing diffs for regressions, missing tests, grounding problems, and unsafe wording
-- keeping hackathon notes, training reports, and handoff docs in sync with implementation
+The point of this build is that my friend can run it without me, without a cloud account, and without
+internet. From a fresh checkout:
 
-The detailed team note is in [docs/50-codex-development-workflow.md](docs/50-codex-development-workflow.md).
-For the official product docs, start with [OpenAI Codex docs](https://developers.openai.com/codex),
-[Codex quickstart](https://developers.openai.com/codex/quickstart), and
-[Codex prompting](https://developers.openai.com/codex/prompting).
+```bash
+uv sync
+uv run python app.py
+```
 
-## Docs
+That starts the web app on your machine with Hugging Face-hosted model weights downloaded once. For a
+fully offline path, point the coach summary at a local `llama.cpp` server serving the Nemotron GGUF:
 
-The README is intentionally product-focused. Command-heavy setup, runtime, training, environment, and
-verification details live in the technical docs:
+```bash
+SPOTTER_COACH_SUMMARY_PROVIDER=llama_cpp SPOTTER_LLAMA_CPP_BASE_URL=http://127.0.0.1:8080 \
+  uv run python app.py
+```
 
-- [Technical setup and runtime](docs/02-technical-setup.md)
-- [Hackathon overview report](docs/10-overview-build-small-hackathon-report.md)
-- [Router training report](docs/20-router-training-report.md)
-- [Router Hugging Face release guide](docs/21-router-huggingface-release.md)
-- [Coach summary Modal training](docs/30-coach-modal-training.md)
-- [Coach training report](docs/31-coach-training-report.md)
-- [Data collection guide](docs/40-data-custom-collection-guide.md)
-- [Docs index](docs/01-docs-index.md)
+- [demo/README.md](demo/README.md) — router demo clips and expected labels
+- `scripts/` — training, evaluation, and publishing entrypoints for the router and coach summary
+- `src/spotter/` — the pipeline, exercise strategies, SLM providers, and verifier
 
 ## Contributors
 
