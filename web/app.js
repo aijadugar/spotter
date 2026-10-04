@@ -103,6 +103,16 @@ const runningProgressSteps = [
     text: "I am turning the scan into coaching notes you can use right away.",
     delayMs: 5600,
   },
+  {
+    id: "memory",
+    text: "Checking what we worked on in past sessions.",
+    delayMs: 5800,
+  },
+  {
+    id: "plan",
+    text: "Here is your plan for next time.",
+    delayMs: 5900,
+  },
 ];
 
 function pendingProgressState() {
@@ -160,6 +170,16 @@ function finalProgressState(result) {
       id: "coach",
       status: "done",
       text: "Coach notes are ready.",
+    },
+    {
+      id: "memory",
+      status: "done",
+      text: "Checking what we worked on in past sessions.",
+    },
+    {
+      id: "plan",
+      status: "done",
+      text: "Here is your plan for next time.",
     },
   ];
 }
@@ -255,6 +275,34 @@ function StageEmpty() {
   );
 }
 
+function DemoClipsPanel({ clips, onAnalyze, disabled }) {
+  if (!clips.length) return null;
+  return h(
+    "section",
+    { className: "demo-clips" },
+    h("h3", null, "Try a demo"),
+    h("p", { className: "demo-hint" }, "Click a clip to run the full pipeline instantly."),
+    h(
+      "div",
+      { className: "demo-clip-grid" },
+      clips.map((clip) =>
+        h(
+          "button",
+          {
+            className: "demo-clip",
+            key: clip.id,
+            onClick: () => onAnalyze(clip.id),
+            disabled,
+            title: clip.description,
+          },
+          h("strong", null, clip.label),
+          h("span", { className: "demo-desc" }, clip.description),
+        ),
+      ),
+    ),
+  );
+}
+
 function App() {
   const [config, setConfig] = useState(defaults);
   const [file, setFile] = useState(null);
@@ -268,6 +316,7 @@ function App() {
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
   const [progressSteps, setProgressSteps] = useState([]);
+  const [demoClips, setDemoClips] = useState([]);
 
   const previewUrl = useMemo(
     () => (file ? URL.createObjectURL(file) : ""),
@@ -282,6 +331,13 @@ function App() {
   }, []);
 
   useEffect(() => {
+    fetch("/api/demo/clips")
+      .then((response) => response.json())
+      .then((data) => setDemoClips(data.clips))
+      .catch(() => setDemoClips([]));
+  }, []);
+
+  useEffect(() => {
     return () => {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
     };
@@ -293,6 +349,38 @@ function App() {
         ? current.filter((item) => item !== value)
         : [...current, value],
     );
+  }
+
+  async function runDemoAnalyze(clipId) {
+    setError("");
+    setStatus("running");
+    setResult(null);
+    setProgressSteps(pendingProgressState());
+    try {
+      const response = await fetch(`/api/demo/analyze/${clipId}`);
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        throw new Error(body.detail || "Demo analysis failed.");
+      }
+      const body = await readAnalysisStream(response, (progressEvent) => {
+        setProgressSteps((currentSteps) =>
+          applyProgressEvent(currentSteps, progressEvent),
+        );
+      });
+      setResult(body);
+      setProgressSteps(finalProgressState(body));
+      setStatus("complete");
+    } catch (caught) {
+      setError(caught.message || "Demo analysis failed.");
+      setProgressSteps([
+        {
+          id: "error",
+          status: "active",
+          text: caught.message,
+        },
+      ]);
+      setStatus("idle");
+    }
   }
 
   async function analyze(event) {
@@ -438,6 +526,17 @@ function App() {
                 h("strong", null, "Drop a workout clip"),
                 h("span", null, "or click to upload an MP4, MOV, or WebM file"),
               ),
+        ),
+        h(
+          "div",
+          { className: "demo-section" },
+          demoClips.length > 0 &&
+            demoClips.some((c) => c.available) &&
+            h(DemoClipsPanel, {
+              clips: demoClips.filter((c) => c.available),
+              onAnalyze: runDemoAnalyze,
+              disabled: status === "running",
+            }),
         ),
         h(
           "div",
