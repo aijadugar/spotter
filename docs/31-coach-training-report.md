@@ -273,7 +273,7 @@ Hugging Face inference route currently used in `HFInferenceCoachSummaryModel`.
 
 Observed runtime failure:
 
-- `The requested model 'build-small-hackathon/pozify-coach-summary1' is not a chat model.`
+- `The requested model 'build-small-hackathon/spotter-coach-summary1' is not a chat model.`
 
 Because of that, the app falls back even when the runtime resolves the correct repo ID.
 
@@ -281,7 +281,7 @@ Because of that, the app falls back even when the runtime resolves the correct r
 
 The app runtime defaults to the fine-tuned coach-summary model:
 
-- `build-small-hackathon/pozify-coach-summary1`
+- `build-small-hackathon/spotter-coach-summary1`
 
 The deterministic fallback summary remains enabled because hosted inference can still be
 unavailable, reject a model route, or return output that fails schema validation. If needed,
@@ -309,7 +309,7 @@ unavailable, reject a model route, or return output that fails schema validation
 
 ### Short term
 
-1. Use `build-small-hackathon/pozify-coach-summary1` as the default runtime coach model.
+1. Use `build-small-hackathon/spotter-coach-summary1` as the default runtime coach model.
 2. Keep the fallback summary enabled in production.
 3. Expand the grounded SFT dataset from more real runs before increasing training complexity.
 4. Add stronger output-format controls or post-processing to improve JSON validity.
@@ -337,7 +337,7 @@ uv run python scripts/build_coach_summary_sft_dataset.py
 Run the full Modal training flow:
 
 ```bash
-uv run modal run scripts/coach_summary_modal.py --stage all --epochs 2 --style-weight 0.2 --repo-id build-small-hackathon/pozify-coach-summary1
+uv run modal run scripts/coach_summary_modal.py --stage all --epochs 2 --style-weight 0.2 --repo-id build-small-hackathon/spotter-coach-summary1
 ```
 
 Run the app with the default fine-tuned runtime model:
@@ -350,7 +350,7 @@ uv run python app.py
 Or set the runtime model explicitly:
 
 ```bash
-export SPOTTER_COACH_SUMMARY_MODEL=build-small-hackathon/pozify-coach-summary1
+export SPOTTER_COACH_SUMMARY_MODEL=build-small-hackathon/spotter-coach-summary1
 uv run python app.py
 ```
 
