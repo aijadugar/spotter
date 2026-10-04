@@ -15,7 +15,7 @@ Official references:
 The configured model repository is:
 
 ```text
-build-small-hackathon/pozify-exercise-router
+build-small-hackathon/spotter-exercise-router
 ```
 
 Create a user access token at:
@@ -53,7 +53,7 @@ Upload the model card and artifacts:
 
 ```bash
 uv run python scripts/upload_exercise_router_to_hf.py \
-  --repo-id build-small-hackathon/pozify-exercise-router \
+  --repo-id build-small-hackathon/spotter-exercise-router \
   --private
 ```
 
@@ -65,7 +65,7 @@ evaluation. It reads `HF_TOKEN`, `SPOTTER_ROUTER_HF_REPO_ID`, and optional
 
 ```bash
 uv run modal run scripts/exercise_router_modal.py --stage all
-uv run modal run scripts/exercise_router_modal.py --stage publish --repo-id build-small-hackathon/pozify-exercise-router
+uv run modal run scripts/exercise_router_modal.py --stage publish --repo-id build-small-hackathon/spotter-exercise-router
 ```
 
 `stage evaluate` and `stage all` publish automatically after writing `router_selection.json`.
@@ -83,7 +83,7 @@ The upload script creates the repository if needed and uploads:
 
 ## Runtime Configuration
 
-The runtime loader uses `build-small-hackathon/pozify-exercise-router` by default. Override the
+The runtime loader uses `build-small-hackathon/spotter-exercise-router` by default. Override the
 model repository ID only when you want to test or deploy a different router repo:
 
 ```bash
