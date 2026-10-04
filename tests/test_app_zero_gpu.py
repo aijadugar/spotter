@@ -73,6 +73,8 @@ def _app_import_stubs() -> dict[str, types.ModuleType]:
 
     exercise_catalog = types.ModuleType("spotter.exercise_catalog")
     exercise_catalog.USER_SELECTABLE_EXERCISES = ["squat"]
+    exercise_catalog.EXERCISES = ["squat", "push_up", "shoulder_press"]
+    exercise_catalog.INTENDED_EXERCISES = ["squat", "push_up", "shoulder_press"]
 
     pipeline = types.ModuleType("spotter.pipeline")
 
@@ -86,6 +88,7 @@ def _app_import_stubs() -> dict[str, types.ModuleType]:
     hf_spaces.zero_gpu_enabled = lambda: False
     hf_spaces.default_spaces_gpu_duration = lambda: 0
     hf_spaces.spaces_gpu = _decorator_factory
+    hf_spaces.router_torch_device = lambda: "cpu"
 
     session_memory = types.ModuleType("spotter.steps.session_memory")
     session_memory.get_session_memory = lambda: None
