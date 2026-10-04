@@ -211,6 +211,22 @@ SPOTTER_COACH_SUMMARY_PROVIDER=llama_cpp SPOTTER_LLAMA_CPP_BASE_URL=http://127.0
 - `scripts/` — training, evaluation, and publishing entrypoints for the router and coach summary
 - `src/spotter/` — the pipeline, exercise strategies, SLM providers, and verifier
 
+## Development
+
+Install the dev extra and run the CI commands locally:
+
+```bash
+uv sync --locked --extra dev
+uv run python -m unittest discover -s tests
+uv run python -m py_compile app.py src/spotter/*.py src/spotter/steps/*.py tests/*.py
+uv run ruff check .
+```
+
+The first command installs dependencies (and the `ruff` dev extra). The test suite runs the pipeline
+end-to-end in mock mode against generated fixture videos, so it needs OpenCV and MediaPipe. `py_compile`
+catches syntax errors across the whole tree, and `ruff check .` enforces the lint rules in
+`pyproject.toml`.
+
 ## Contributors
 
 - 🚀 [@nvti](https://github.com/nvti)
