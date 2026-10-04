@@ -48,7 +48,7 @@ uv run python app.py
 The app defaults to the fine-tuned coach-summary model:
 
 ```bash
-export SPOTTER_COACH_SUMMARY_MODEL=build-small-hackathon/pozify-coach-summary1
+export SPOTTER_COACH_SUMMARY_MODEL=build-small-hackathon/spotter-coach-summary1
 uv run python app.py
 ```
 
@@ -61,7 +61,7 @@ local model runtime:
 
 ```bash
 SPOTTER_COACH_SUMMARY_PROVIDER=hf_inference
-SPOTTER_COACH_SUMMARY_MODEL=build-small-hackathon/pozify-coach-summary1
+SPOTTER_COACH_SUMMARY_MODEL=build-small-hackathon/spotter-coach-summary1
 ```
 
 For Hugging Face ZeroGPU Spaces, local Transformers is selected automatically so the app does not
@@ -85,11 +85,11 @@ Download the merged repo locally, then point Spotter at it:
 ```bash
 export SPOTTER_COACH_SUMMARY_LOCAL_MODEL_DIR=/absolute/path/to/merged_model
 export SPOTTER_COACH_SUMMARY_BASE_MODEL=nvidia/NVIDIA-Nemotron-3-Nano-4B-BF16
-export SPOTTER_COACH_SUMMARY_ADAPTER_ID=build-small-hackathon/pozify-coach-summary1
+export SPOTTER_COACH_SUMMARY_ADAPTER_ID=build-small-hackathon/spotter-coach-summary1
 uv run python app.py
 ```
 
-This is the simplest way to use `build-small-hackathon/pozify-coach-summary1` today without adding a
+This is the simplest way to use `build-small-hackathon/spotter-coach-summary1` today without adding a
 dedicated inference endpoint.
 
 ### 3. Base cloud model override
@@ -146,7 +146,7 @@ Run the full router training and publish flow:
 ```bash
 uv run modal run scripts/exercise_router_modal.py \
   --stage all \
-  --repo-id build-small-hackathon/pozify-exercise-router
+  --repo-id build-small-hackathon/spotter-exercise-router
 ```
 
 Step-by-step:
@@ -157,7 +157,7 @@ uv run modal run scripts/exercise_router_modal.py --stage features
 uv run modal run scripts/exercise_router_modal.py --stage train-baseline
 uv run modal run scripts/exercise_router_modal.py --stage train-temporal
 uv run modal run scripts/exercise_router_modal.py --stage evaluate
-uv run modal run scripts/exercise_router_modal.py --stage publish --repo-id build-small-hackathon/pozify-exercise-router
+uv run modal run scripts/exercise_router_modal.py --stage publish --repo-id build-small-hackathon/spotter-exercise-router
 ```
 
 The active router artifact is `temporal.pt`; the baseline is retained for comparison and fallback.
@@ -177,7 +177,7 @@ uv run modal run scripts/coach_summary_modal.py \
   --stage all \
   --epochs 2 \
   --style-weight 0.2 \
-  --repo-id build-small-hackathon/pozify-coach-summary1
+  --repo-id build-small-hackathon/spotter-coach-summary1
 ```
 
 The checked-in fine-tune config uses `nvidia/NVIDIA-Nemotron-3-Nano-4B-BF16` as the base model.
@@ -191,12 +191,12 @@ uv run modal run scripts/coach_summary_modal.py --stage prepare-data
 uv run modal run scripts/coach_summary_modal.py --stage train --epochs 2 --style-weight 0.2
 uv run modal run scripts/coach_summary_modal.py --stage evaluate --limit 5
 uv run modal run scripts/coach_summary_modal.py --stage merge
-uv run modal run scripts/coach_summary_modal.py --stage publish-merged --repo-id build-small-hackathon/pozify-coach-summary1
+uv run modal run scripts/coach_summary_modal.py --stage publish-merged --repo-id build-small-hackathon/spotter-coach-summary1
 ```
 
 Important runtime note:
 
-- the default coach model is `build-small-hackathon/pozify-coach-summary1`
+- the default coach model is `build-small-hackathon/spotter-coach-summary1`
 - Hugging Face hosted inference may still reject a repo or produce invalid JSON, so the
   conservative fallback summary stays enabled
 - for the most predictable fine-tuned inference path, use `SPOTTER_COACH_SUMMARY_LOCAL_MODEL_DIR`
