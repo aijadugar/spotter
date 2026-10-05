@@ -115,8 +115,13 @@ def healthz() -> dict[str, str]:
 
 
 @server.get("/", response_class=HTMLResponse, include_in_schema=False)
-def index() -> FileResponse:
-    return FileResponse(WEB_DIR / "index.html")
+def index() -> HTMLResponse:
+    # Serve with no-cache to ensure fresh HTML on every request during development
+    content = (WEB_DIR / "index.html").read_text(encoding="utf-8")
+    return HTMLResponse(
+        content=content,
+        headers={"Cache-Control": "no-cache, no-store, must-revalidate"}
+    )
 
 
 @server.get("/api/config")
