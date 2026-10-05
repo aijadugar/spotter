@@ -89,7 +89,7 @@ class SqliteSessionMemory:
 def get_session_memory(db_path: Path | str | None = None) -> SessionMemory:
     backend = os.getenv(MEMORY_BACKEND_ENV, "sqlite").strip().lower()
     if backend == "backboard":
-        from spotter.steps.backboard_memory import BackboardSessionMemory
+        from spotter.steps.backboard_memory import BackboardMemory
 
-        return BackboardSessionMemory(fallback=SqliteSessionMemory(db_path or DEFAULT_DB_PATH))
+        return BackboardMemory(fallback=SqliteSessionMemory(db_path or DEFAULT_DB_PATH))
     return SqliteSessionMemory(db_path or DEFAULT_DB_PATH)
