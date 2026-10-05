@@ -6,6 +6,7 @@ import os
 from typing import Any, Protocol
 
 from spotter.contracts import ProgressPlan, SessionRecord
+from spotter.steps.progress_insight import compare_sessions, compute_trend_over_sessions
 
 PROGRESS_PLAN_PROVIDER_ENV = "SPOTTER_PROGRESS_PLAN_PROVIDER"
 
@@ -81,9 +82,29 @@ def build_fallback_plan(
     if top_issue:
         cues.append(f"Watch for `{top_issue}`, especially in the last reps.")
 
-    rom_trend = _trend(history, "avg_rom_score")
-    if rom_trend is not None and rom_trend > 0:
-        encouragement = "Your range of motion is trending up. Keep it going."
+    # Add deterministic insight from last session
+    if history:
+        latest_record = SessionRecord(
+            session_id=findings.exercise,  # dummy
+            timestamp="",
+            profile_key="",
+            exercise=findings.exercise,
+            rep_count=findings.rep_count,
+            aggregate_metrics=findings.aggregate_metrics,
+            issue_counts={label: 1 for label in findings.issue_labels},
+            form_score=sum(findings.aggregate_metrics.values()) / len(findings.aggregate_metrics),
+            source_run_id="",
+        )
+        prev_record = history[0]
+        comp = compare_sessions(latest_record, prev_record)
+        cues.append(format_comparison_for_plan(comp))
+
+    # Add trend over last N sessions
+    trend_data = compute_trend_over_sessions(history, n=5)
+    if trend_data.get("form_trend") == "improving":
+        encouragement = "Your form is trending up across sessions. Keep it going."
+    elif trend_data.get("form_trend") == "declining":
+        encouragement = "Form has dipped recently — focus on quality over quantity."
     elif history:
         encouragement = "Progress is not always linear. Consistency is what counts."
     else:
@@ -92,6 +113,8 @@ def build_fallback_plan(
     notes = [f"Based on {len(history)} previous session(s)."]
     if failure_reason:
         notes.append(f"Deterministic plan used because: {failure_reason}.")
+    if trend_data.get("persistent_issues"):
+        notes.append(f"Persistent issues: {', '.join(trend_data['persistent_issues'])}")
     return ProgressPlan(
         focus=focus,
         targets=targets,

@@ -28,7 +28,9 @@ class SqliteSessionMemory:
     def _connect(self):
         import sqlite3
 
-        return sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path)
+        conn.row_factory = sqlite3.Row
+        return conn
 
     def _init_db(self) -> None:
         with self._connect() as conn:
@@ -78,6 +80,10 @@ class SqliteSessionMemory:
             ).fetchall()
         records = [SessionRecord(**json.loads(row[0])) for row in rows]
         return list(reversed(records))
+
+    def close(self) -> None:
+        """Close any open connections (no-op for SQLite, kept for interface compatibility)."""
+        pass
 
 
 def get_session_memory(db_path: Path | str | None = None) -> SessionMemory:

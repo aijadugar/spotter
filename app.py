@@ -619,5 +619,24 @@ async def analyze_stream_api(
     )
 
 
+@server.post("/api/memory/delete-cloud", include_in_schema=False)
+def delete_cloud_memory() -> dict[str, str]:
+    """Delete cloud memory via Backboard."""
+    try:
+        from spotter.steps.backboard_memory import BackboardMemory
+        from spotter.steps.session_memory import SessionMemory
+
+        # Create a temporary memory instance to call delete
+        local_memory = SessionMemory(profile_key="default")
+        backboard = BackboardMemory(local_memory)
+
+        if backboard.delete_cloud_memory():
+            return {"status": "ok", "message": "Cloud memory deleted successfully"}
+        else:
+            return {"status": "error", "message": "Failed to delete cloud memory (not configured or no assistant)"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
 if __name__ == "__main__":
     server.launch(_frontend=False)
