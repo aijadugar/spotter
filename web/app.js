@@ -4,12 +4,93 @@ import React, {
   useState,
 } from "https://esm.sh/react@18.2.0";
 import { createRoot } from "https://esm.sh/react-dom@18.2.0/client";
-import { defaults, h, label } from "./common.js";
+import { h } from "./common.js";
 import {
   ReportPanel,
   ReplayReviewPanel,
   ReviewInsights,
 } from "./report.js";
+
+// Main App component
+function App() {
+  const [result, setResult] = useState(null);
+  const [activeTab, setActiveTab] = useState("summary");
+  const [videoSrc, setVideoSrc] = useState(null);
+  const [selectedRepId, setSelectedRepId] = useState(null);
+  const [playbackTime, setPlaybackTime] = useState(0);
+  const [status, setStatus] = useState("idle");
+  const [error, setError] = useState(null);
+
+  async function handleAnalyze(file) {
+    setStatus("analyzing");
+    setError(null);
+    setResult(null);
+    setVideoSrc(null);
+    setSelectedRepId(null);
+    setPlaybackTime(0);
+
+    const formData = new FormData();
+    formData.append("video", file);
+    formData.append("goal", "beginner_practice");
+    formData.append("experience_level", "beginner");
+    formData.append("intended_exercise", "auto");
+    formData.append("limitations", "[]");
+    formData.append("equipment", "bodyweight");
+    formData.append("bypass_verifier", "true");
+    formData.append("voice_coach", "false");
+
+    try {
+      const response = await fetch("/api/analyze", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      if (data.annotated_video_url) {
+        setVideoSrc(data.annotated_video_url);
+      }
+      setResult(data);
+      setStatus("complete");
+    } catch (err) {
+      setError(err.message);
+      setStatus("error");
+    }
+  }
+
+  function handleFileSelect(event) {
+    const file = event.target.files?.[0];
+    if (file) {
+      handleAnalyze(file);
+    }
+  }
+
+  return h(
+    "div",
+    { className: "app" },
+    h("header", { className: "app-header" },
+      h("h1", null, "Spotter"),
+      h("p", null, "Video-based workout form review")
+    ),
+    h("main", { className: "app-main" },
+      h("section", { className: "upload-section" },
+        h("input", {
+          type: "file",
+          accept: "video/*",
+          onChange: handleFileSelect,
+          disabled: status === "analyzing",
+        }),
+        status === "analyzing" && h("p", { className: "status" }, "Analyzing..."),
+        error && h("p", { className: "error" }, error)
+      ),
+      result && h(
+        "div",
+        { className: "results" },
+        h(ReviewInsights, { result }),
+        h(ReportPanel, { result, activeTab, onTabChange: setActiveTab }),
+        videoSrc && h(ReplayReviewPanel, { result, videoSrc })
+      )
+    )
+  );
+}
 
 // Test component to verify React works
 function TestComponent() {
