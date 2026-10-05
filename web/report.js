@@ -818,7 +818,7 @@ function ProgressPlanPanel({ result }) {
 }
 
 function SummaryTab({ result }) {
-  if (!result) {
+  if (!result || !result.report) {
     return h(
       "section",
       { className: "summary" },
