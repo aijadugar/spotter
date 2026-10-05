@@ -1,5 +1,5 @@
 {
-  "base_model": "nvidia/NVIDIA-Nemotron-3-Nano-4B-BF16",
+  "base_model": "Qwen/Qwen3.5-4B",
   "train_file": "data/sft/progress_plan_train.jsonl",
   "eval_file": "data/sft/progress_plan_eval.jsonl",
   "output_dir": "models/progress_plan_lora",

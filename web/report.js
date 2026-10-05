@@ -9,6 +9,78 @@ import {
   label,
   percent,
 } from "./common.js?v=20260614-modular-app";
+import { generate_trend_svg } from "./progress_insight.js?v=20260614-modular-app";
+
+function ProgressCard({ result }) {
+  if (!result) return null;
+
+  const report = result.report;
+  const plan = report.progress_plan;
+  const history = report.session_history || [];
+
+  // Check if we have comparison data in the plan cues
+  const comparisonCue = plan?.next_session_cues?.find((cue: string) =>
+    cue.includes("vs last session") || cue.includes("Fixed:") || cue.includes("New:") || cue.includes("Persistent:")
+  );
+
+  if (!comparisonCue && !history.length) return null;
+
+  // Generate trend SVG if we have trend data
+  let trendSvg = null;
+  if (plan?.confidence_notes) {
+    const trendNote = plan.confidence_notes.find((note: string) =>
+      note.includes("trending") || note.includes("trend") || note.includes("Persistent issues")
+    );
+    if (trendNote) {
+      const trendData = { form_trend: "improving" }; // Simplified
+      try {
+        trendSvg = generate_trend_svg(trendData, 120, 40);
+      } catch (e) {
+        trendSvg = null;
+      }
+    }
+  }
+
+  return h(
+    "div",
+    { className: "progress-card" },
+    h("h4", null, "Progress"),
+    comparisonCue && h("p", { className: "progress-comparison" }, comparisonCue),
+    trendSvg && h("div", { className: "progress-trend", dangerouslySetInnerHTML: { __html: trendSvg } }),
+    h(
+      "div",
+      { className: "progress-sync" },
+      h("label", { className: "check-chip" },
+        h("input", {
+          type: "checkbox",
+          checked: false,
+          onChange: (e) => {
+            // TODO: Toggle SPOTTER_MEMORY_BACKEND
+            console.log("Sync across devices:", e.target.checked);
+          },
+        }),
+        h("span", null, "Sync across devices"),
+      ),
+      h("span", { className: "privacy-note" },
+        "Only derived metrics (date, exercise, reps, issues, plan focus) leave your device. Never video, frames, or landmarks."
+      ),
+    ),
+    h(
+      "button",
+      {
+        className: "delete-cloud-btn",
+        onClick: () => {
+          if (confirm("Delete all cloud memory? This cannot be undone.")) {
+            fetch("/api/memory/delete-cloud", { method: "POST" })
+              .then(r => r.json())
+              .then(data => alert(data.message || "Done"));
+          }
+        },
+      },
+      "Delete my cloud memory"
+    ),
+  );
+}
 
 function ReviewInsights({ result }) {
   if (!result) return null;

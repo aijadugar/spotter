@@ -71,10 +71,29 @@ def _warmup_models() -> None:
     get_speech_synthesizer()
     print(f"  Speech ready: {time.time() - t0:.2f}s")
     print(f"=== Total warmup: {time.time() - t0:.2f}s ===")
+    _WARMUP_COMPLETE.set()
 
 
-# Run warmup at module import (server startup)
-_warmup_models()
+# Warmup state
+_WARMUP_COMPLETE = threading.Event()
+_WARMUP_THREAD: threading.Thread | None = None
+
+
+def _start_warmup_background() -> None:
+    """Start model warmup in background thread so port opens immediately."""
+    global _WARMUP_THREAD
+    if _WARMUP_THREAD is None:
+        _WARMUP_THREAD = threading.Thread(target=_warmup_models, daemon=True)
+        _WARMUP_THREAD.start()
+
+
+def _wait_warmup(timeout: float = 120.0) -> bool:
+    """Wait for warmup to complete."""
+    return _WARMUP_COMPLETE.wait(timeout=timeout)
+
+
+# Start warmup in background immediately on import
+_start_warmup_background()
 
 
 server = gr.Server(
@@ -87,7 +106,12 @@ server.mount("/static", StaticFiles(directory=WEB_DIR), name="static")
 
 @server.get("/healthz", include_in_schema=False)
 def healthz() -> dict[str, str]:
-    return {"status": "ok", "service": "spotter"}
+    warmed = _WARMUP_COMPLETE.is_set()
+    return {
+        "status": "ok" if warmed else "warming",
+        "service": "spotter",
+        "warmed": str(warmed).lower(),
+    }
 
 
 @server.get("/", response_class=HTMLResponse, include_in_schema=False)
@@ -593,6 +617,25 @@ async def analyze_stream_api(
         media_type="application/x-ndjson",
         headers={"Cache-Control": "no-cache"},
     )
+
+
+@server.post("/api/memory/delete-cloud", include_in_schema=False)
+def delete_cloud_memory() -> dict[str, str]:
+    """Delete cloud memory via Backboard."""
+    try:
+        from spotter.steps.backboard_memory import BackboardMemory
+        from spotter.steps.session_memory import SessionMemory
+
+        # Create a temporary memory instance to call delete
+        local_memory = SessionMemory(profile_key="default")
+        backboard = BackboardMemory(local_memory)
+
+        if backboard.delete_cloud_memory():
+            return {"status": "ok", "message": "Cloud memory deleted successfully"}
+        else:
+            return {"status": "error", "message": "Failed to delete cloud memory (not configured or no assistant)"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 
 if __name__ == "__main__":

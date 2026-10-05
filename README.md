@@ -124,6 +124,8 @@ Every runtime model in Spotter is open-weight and small enough to run on a lapto
 | Issue markers               | Transparent rules over per-rep metrics           | Separates valid variations from likely form issues.                   |
 | Coach-summary base          | `nvidia/NVIDIA-Nemotron-3-Nano-4B-BF16`          | Base model for coach-summary LoRA SFT.                                |
 | Coach summary               | `aijadugar/spotter-coach-summary1`                | Fine-tuned model for grounded structured coaching output.             |
+| Progress-plan base          | `Qwen/Qwen3.5-4B`                                 | Base model for progress-plan LoRA SFT via Tinker.                     |
+| Progress plan (Tinker)      | Fine-tuned on Tinker                              | LoRA adapter trained via Tinker SDK for progress plans.               |
 | Fully local summary path    | Nemotron GGUF through `llama.cpp`                | Optional offline runtime path for small-model inference.              |
 | Verifier                    | Deterministic grounding and safety checks        | Blocks unsupported issues, diagnosis language, and ungrounded claims. |
 
@@ -172,6 +174,7 @@ runtime.
 - Repo: [aijadugar/spotter](https://github.com/aijadugar/spotter)
 - Router model repo: [aijadugar/spotter-exercise-router](https://huggingface.co/aijadugar/spotter-exercise-router)
 - Coach-summary model repo: [aijadugar/spotter-coach-summary1](https://huggingface.co/aijadugar/spotter-coach-summary1)
+- **Render (live):** `https://spotter.onrender.com` *(deploy via `render.yaml` Blueprint)*
 
 Tools used in this build:
 
@@ -188,6 +191,46 @@ anywhere?"* They now film a set, get rep counts and annotated form feedback the 
 the check-engine light for "is my squat depth actually improving" finally has an answer that isn't
 a stranger on a forum. The feature request they came back with — remember last session's numbers —
 is exactly why the repo keeps a local session record and progress plan instead of a cloud profile.
+
+## Fine-tuned with Tinker
+
+The progress-plan LoRA is trained on Tinker using the deterministic planner as the ground-truth
+generator. The dataset is ~500 training / 88 eval examples (15% held out), chat-format JSONL.
+
+**Dry-run (default, no API key required):**
+```bash
+uv run python scripts/train_progress_plan_tinker.py --dry-run
+# Output: estimated tokens, estimated cost (from Tinker pricing: $0.737 / 1M tokens for Qwen3.5-4B training), exits 0
+```
+
+**Rebuild dataset then dry-run:**
+```bash
+uv run python scripts/train_progress_plan_tinker.py --dry-run --build-dataset
+```
+
+**Real training (requires TINKER_API_KEY, aborts if estimated cost > $3):**
+```bash
+export TINKER_API_KEY=your_key
+uv run python scripts/train_progress_plan_tinker.py
+# Uses: tinker.ServiceClient(); create_lora_training_client(base_model="Qwen/Qwen3.5-4B", rank=16)
+# Loop: forward_backward(loss_fn="cross_entropy") → optim_step(AdamParams(lr=2e-4))
+# Saves weights and returns a sampling client for eval
+```
+
+**Evaluate base vs fine-tuned on held-out split:**
+```bash
+uv run python scripts/evaluate_progress_plan.py --model-id <fine_tuned_model_id>
+# Writes reports/tinker_eval.md
+# Without TINKER_API_KEY: exits cleanly with "needs TINKER_API_KEY"
+```
+
+**Optional provider for progress plans at inference:**
+```bash
+export SPOTTER_PLAN_BACKEND=tinker
+export TINKER_API_KEY=your_key
+uv run python app.py
+# Falls back to deterministic planner on any error/missing key; verifier still runs on output
+```
 
 ## Run It Locally
 
