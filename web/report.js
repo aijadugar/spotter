@@ -8,8 +8,8 @@ import {
   h,
   label,
   percent,
-} from "./common.js?v=20260614-modular-app";
-import { generate_trend_svg } from "./progress_insight.js?v=20260614-modular-app";
+} from "./common.js";
+import { generate_trend_svg } from "./progress_insight.js";
 
 function ProgressCard({ result }) {
   if (!result) return null;
@@ -19,7 +19,7 @@ function ProgressCard({ result }) {
   const history = report.session_history || [];
 
   // Check if we have comparison data in the plan cues
-  const comparisonCue = plan?.next_session_cues?.find((cue: string) =>
+  const comparisonCue = plan?.next_session_cues?.find((cue) =>
     cue.includes("vs last session") || cue.includes("Fixed:") || cue.includes("New:") || cue.includes("Persistent:")
   );
 
@@ -28,7 +28,7 @@ function ProgressCard({ result }) {
   // Generate trend SVG if we have trend data
   let trendSvg = null;
   if (plan?.confidence_notes) {
-    const trendNote = plan.confidence_notes.find((note: string) =>
+    const trendNote = plan.confidence_notes.find((note) =>
       note.includes("trending") || note.includes("trend") || note.includes("Persistent issues")
     );
     if (trendNote) {
@@ -82,9 +82,34 @@ function ProgressCard({ result }) {
   );
 }
 
-function ReviewInsights({ result }) {
-  if (!result) return null;
-  const report = result.report;
+let activeAudio = null;
+function playAudio(src) {
+  if (!src) return;
+  if (activeAudio) {
+    activeAudio.pause();
+    activeAudio = null;
+  }
+  const audio = new Audio(src);
+  activeAudio = audio;
+  audio.addEventListener("ended", () => {
+    if (activeAudio === audio) activeAudio = null;
+  });
+  audio.play().catch(() => {
+    if (activeAudio === audio) activeAudio = null;
+  });
+}
+
+function ReviewInsights({ result, onCue }) {
+  const report = result?.report;
+  if (!report) return null;
+
+  // Use whatever helper already builds the annotated-video URL; falls back to the raw path.
+  const toUrl = (path) => (typeof artifactUrl === "function" ? artifactUrl(path) : path);
+  const speech = result.speech || report.speech || result;
+  const briefingSrc = speech.briefing_audio_path ? toUrl(speech.briefing_audio_path) : null;
+  const cues = (speech.cues || []).filter((cue) => cue && cue.audio_path);
+  const hasVoice = Boolean(briefingSrc) || cues.length > 0;
+
   const warnings = report.video_manifest?.quality_warnings || [];
   const exercise = label(report.exercise?.exercise || "movement");
   const repCount = report.reps?.reps?.length || 0;
@@ -94,76 +119,62 @@ function ReviewInsights({ result }) {
     ? `${issues.length} coaching moment${issues.length === 1 ? "" : "s"}`
     : "No clear form issues";
 
+  const insight = (title, value, note) =>
+    h(
+      "article",
+      { className: "scan-insight" },
+      h("span", null, title),
+      h("strong", null, value),
+      h("small", null, note),
+    );
+
   return h(
     "div",
     { className: "scan-insights", "aria-label": "Scan results" },
-    h(
-      "div",
-      { className: "voice-controls" },
-      result.briefing_audio_path &&
-        h("button", {
-          className: "voice-btn",
-          onClick: () => {
-            const audio = new Audio(result.briefing_audio_path);
-            audio.play();
-          },
-        },
-        h("span", { className: "voice-icon" }, "🔊"),
-        h("span", null, "Play briefing")
-      ),
-      (result.cues || []).map((cue, index) =>
-        cue.audio_path &&
-          h("button", {
-            className: "voice-btn cue-btn",
-            key: index,
-            onClick: () => {
-              const audio = new Audio(cue.audio_path);
-              audio.play();
-              // TODO: Seek video to this cue's moment if timestamp data available
-            },
-          },
-          h("span", { className: "voice-icon" }, "🔊"),
-          h("span", null, `Cue ${index + 1}`)
-      ),
+    insight("Movement", exercise, `confidence ${confidence}`),
+    insight("Reps counted", String(repCount), repCount === 1 ? "rep detected" : "reps detected"),
+    insight("Coach review", issueText, issues.length ? "tap Issues for clips" : "nothing major stood out"),
+    insight(
+      "Video quality",
+      warnings.length ? "Needs a quick note" : "Looks good",
+      warnings.length ? warnings.map(label).join(", ") : "clear enough to coach",
     ),
-    h(
-      "article",
-      { className: "scan-insight" },
-      h("span", null, "Movement"),
-      h("strong", null, exercise),
-      h("small", null, `confidence ${confidence}`),
-    ),
-    h(
-      "article",
-      { className: "scan-insight" },
-      h("span", null, "Reps counted"),
-      h("strong", null, String(repCount)),
-      h("small", null, repCount === 1 ? "clean rep detected" : "reps detected"),
-    ),
-    h(
-      "article",
-      { className: "scan-insight" },
-      h("span", null, "Coach review"),
-      h("strong", null, issueText),
-      h(
-        "small",
-        null,
-        issues.length ? "tap Issues for clips" : "nothing major stood out",
-      ),
-    ),
-    h(
-      "article",
-      { className: "scan-insight" },
-      h("span", null, "Video quality"),
-      h("strong", null, warnings.length ? "Needs a quick note" : "Looks good"),
-      h(
-        "small",
-        null,
-        warnings.length
-          ? warnings.map(label).join(", ")
-          : "clear enough to coach",
-      ),
-    ),
+    hasVoice
+      ? h(
+          "div",
+          { className: "voice-controls" },
+          briefingSrc &&
+            h(
+              "button",
+              {
+                type: "button",
+                className: "voice-btn",
+                "aria-label": "Play spoken briefing",
+                onClick: () => playAudio(briefingSrc),
+              },
+              h("span", { className: "voice-icon", "aria-hidden": "true" }, "🔊"),
+              h("span", null, "Play briefing"),
+            ),
+          cues.map((cue, index) =>
+            h(
+              "button",
+              {
+                type: "button",
+                className: "voice-btn cue-btn",
+                key: cue.id ?? cue.issue_id ?? index,
+                title: cue.text || undefined,
+                "aria-label": cue.text ? `Play cue: ${cue.text}` : `Play cue ${index + 1}`,
+                onClick: () => {
+                  playAudio(toUrl(cue.audio_path));
+                  if (typeof onCue === "function") onCue(cue);
+                },
+              },
+              h("span", { className: "voice-icon", "aria-hidden": "true" }, "🔊"),
+              h("span", null, `Cue ${index + 1}`),
+            ),
+          ),
+        )
+      : null,
   );
 }
 
@@ -528,9 +539,9 @@ function RepTrendChart({ reps, metricKey, labelText, className }) {
       areaPath ? h("path", { className: "trend-area", d: areaPath }) : null,
       linePath.length
         ? h("path", {
-            className: "trend-line",
-            d: pointPath(linePath),
-          })
+          className: "trend-line",
+          d: pointPath(linePath),
+        })
         : null,
       trendPoints.map((point) =>
         h("circle", {
@@ -652,16 +663,16 @@ function CoachOverview({ result }) {
     ),
     isFallback || verifierBypassed
       ? h(
-          "div",
-          { className: "coach-system-row" },
-          isFallback
-            ? h(
-                "p",
-                { className: "system-note" },
-                "A conservative fallback summary was used because the generated summary was unavailable or did not pass verification.",
-              )
-            : null,
-        )
+        "div",
+        { className: "coach-system-row" },
+        isFallback
+          ? h(
+            "p",
+            { className: "system-note" },
+            "A conservative fallback summary was used because the generated summary was unavailable or did not pass verification.",
+          )
+          : null,
+      )
       : null,
     h(
       "div",
@@ -734,10 +745,10 @@ function RepTimeline({
       },
       isPlayback
         ? h("span", {
-            className: "timeline-playhead",
-            style: { left: playheadLeft },
-            "aria-hidden": "true",
-          })
+          className: "timeline-playhead",
+          style: { left: playheadLeft },
+          "aria-hidden": "true",
+        })
         : null,
       reps.map((rep) => {
         const left = `${Math.max(0, Math.min(98, (rep.start_sec / duration) * 100))}%`;
@@ -908,12 +919,12 @@ function SummaryTab({ result }) {
       { className: "score-board" },
       scores.length
         ? scores.map((row) =>
-            h(ScoreBar, {
-              key: row.name,
-              labelText: row.name,
-              value: row.value,
-            }),
-          )
+          h(ScoreBar, {
+            key: row.name,
+            labelText: row.name,
+            value: row.value,
+          }),
+        )
         : h("p", { className: "empty-copy" }, "No movement scores available."),
     ),
     h(CoachOverview, { result }),
@@ -933,17 +944,17 @@ function SummaryTab({ result }) {
     ),
     warnings.length
       ? h(
-          "div",
-          { className: "quality-list" },
-          warnings.map((warning) =>
-            h("span", { key: warning }, label(warning)),
-          ),
-        )
-      : h(
-          "div",
-          { className: "quality-list" },
-          h("span", null, "No quality warnings"),
+        "div",
+        { className: "quality-list" },
+        warnings.map((warning) =>
+          h("span", { key: warning }, label(warning)),
         ),
+      )
+      : h(
+        "div",
+        { className: "quality-list" },
+        h("span", null, "No quality warnings"),
+      ),
   );
 }
 
@@ -979,33 +990,33 @@ function MetricsTab({ result }) {
         { className: "score-board metric-score-board" },
         scoreRows.length
           ? scoreRows.map((row) =>
-              h(ScoreBar, {
-                key: row.name,
-                labelText: row.name,
-                value: row.value,
-              }),
-            )
+            h(ScoreBar, {
+              key: row.name,
+              labelText: row.name,
+              value: row.value,
+            }),
+          )
           : h(
-              "p",
-              { className: "empty-copy" },
-              "No aggregate scores available.",
-            ),
+            "p",
+            { className: "empty-copy" },
+            "No aggregate scores available.",
+          ),
       ),
     ),
     trendSpecs.length
       ? h(
-          "div",
-          { className: "metric-trend-grid" },
-          trendSpecs.map((spec) =>
-            h(RepTrendChart, {
-              key: spec.key,
-              reps,
-              metricKey: spec.key,
-              labelText: spec.label,
-              className: spec.className,
-            }),
-          ),
-        )
+        "div",
+        { className: "metric-trend-grid" },
+        trendSpecs.map((spec) =>
+          h(RepTrendChart, {
+            key: spec.key,
+            reps,
+            metricKey: spec.key,
+            labelText: spec.label,
+            className: spec.className,
+          }),
+        ),
+      )
       : h("p", { className: "empty-copy" }, "No per-rep metrics available."),
     h(RepQualityStrip, { reps }),
     h(
@@ -1205,39 +1216,39 @@ function RepDetailPanel({
       ),
       primaryIssue
         ? h(
-            "article",
-            { className: `rep-issue-brief ${severityLevel(primaryIssue)}` },
+          "article",
+          { className: `rep-issue-brief ${severityLevel(primaryIssue)}` },
+          h(
+            "div",
+            { className: "rep-issue-brief-head" },
             h(
               "div",
-              { className: "rep-issue-brief-head" },
-              h(
-                "div",
-                null,
-                h("span", null, "Issue detail"),
-                h("strong", null, issueTitle(primaryIssue)),
-              ),
-              h(
-                "span",
-                { className: `severity-chip ${severityLevel(primaryIssue)}` },
-                severityText(primaryIssue),
-              ),
+              null,
+              h("span", null, "Issue detail"),
+              h("strong", null, issueTitle(primaryIssue)),
             ),
-            h("p", null, issueEvidence(primaryIssue)),
             h(
-              "div",
-              { className: "rep-issue-meta" },
-              h("span", null, issueFocus(primaryIssue)),
-              h("span", null, issueClipText(result, primaryIssue, 0)),
-              h(
-                "span",
-                null,
-                `confidence ${percent(primaryIssue.evidence?.confidence)}`,
-              ),
-              repIssues.length > 1
-                ? h("span", null, `+${repIssues.length - 1} more`)
-                : null,
+              "span",
+              { className: `severity-chip ${severityLevel(primaryIssue)}` },
+              severityText(primaryIssue),
             ),
-          )
+          ),
+          h("p", null, issueEvidence(primaryIssue)),
+          h(
+            "div",
+            { className: "rep-issue-meta" },
+            h("span", null, issueFocus(primaryIssue)),
+            h("span", null, issueClipText(result, primaryIssue, 0)),
+            h(
+              "span",
+              null,
+              `confidence ${percent(primaryIssue.evidence?.confidence)}`,
+            ),
+            repIssues.length > 1
+              ? h("span", null, `+${repIssues.length - 1} more`)
+              : null,
+          ),
+        )
         : null,
     );
   }
@@ -1366,35 +1377,35 @@ function RepDetailPanel({
       h("h3", null, repIssues.length ? "Issue in this rep" : "Issue check"),
       repIssues.length
         ? repIssues.map((issue, index) =>
+          h(
+            "article",
+            {
+              className: `issue-mini ${severityLevel(issue)}`,
+              key: `${issue.issue}-${index}`,
+            },
             h(
-              "article",
-              {
-                className: `issue-mini ${severityLevel(issue)}`,
-                key: `${issue.issue}-${index}`,
-              },
+              "div",
+              { className: "issue-mini-head" },
+              h("strong", null, issueTitle(issue)),
               h(
-                "div",
-                { className: "issue-mini-head" },
-                h("strong", null, issueTitle(issue)),
-                h(
-                  "span",
-                  { className: `severity-chip ${severityLevel(issue)}` },
-                  severityText(issue),
-                ),
-              ),
-              h("p", null, issueEvidence(issue)),
-              h(
-                "div",
-                { className: "timeline-meta" },
-                h("span", null, issueClipText(result, issue, index)),
-                h(
-                  "span",
-                  null,
-                  `evidence ${percent(issue.evidence?.confidence)}`,
-                ),
+                "span",
+                { className: `severity-chip ${severityLevel(issue)}` },
+                severityText(issue),
               ),
             ),
-          )
+            h("p", null, issueEvidence(issue)),
+            h(
+              "div",
+              { className: "timeline-meta" },
+              h("span", null, issueClipText(result, issue, index)),
+              h(
+                "span",
+                null,
+                `evidence ${percent(issue.evidence?.confidence)}`,
+              ),
+            ),
+          ),
+        )
         : h("p", null, "No issue marker is attached to this rep."),
     ),
   );
@@ -1437,33 +1448,33 @@ function ReplayReviewPanel({ result, videoSrc, className = "" }) {
         { className: "replay-video-card" },
         videoSrc
           ? h("video", {
-              className: "timeline-video",
-              controls: true,
-              muted: true,
-              playsInline: true,
-              preload: "metadata",
-              ref: replayVideoRef,
-              src: videoSrc,
-              onLoadedMetadata: (event) => {
-                setPlaybackTime(event.currentTarget.currentTime || 0);
-              },
-              onTimeUpdate: (event) => {
-                setPlaybackTime(event.currentTarget.currentTime || 0);
-              },
-              onSeeked: (event) => {
-                setPlaybackTime(event.currentTarget.currentTime || 0);
-              },
-            })
+            className: "timeline-video",
+            controls: true,
+            muted: true,
+            playsInline: true,
+            preload: "metadata",
+            ref: replayVideoRef,
+            src: videoSrc,
+            onLoadedMetadata: (event) => {
+              setPlaybackTime(event.currentTarget.currentTime || 0);
+            },
+            onTimeUpdate: (event) => {
+              setPlaybackTime(event.currentTarget.currentTime || 0);
+            },
+            onSeeked: (event) => {
+              setPlaybackTime(event.currentTarget.currentTime || 0);
+            },
+          })
           : h(
-              "div",
-              { className: "timeline-video-placeholder" },
-              h("strong", null, "No replay video available"),
-              h(
-                "span",
-                null,
-                "Upload a clip or use a run with an annotated video to sync the timeline.",
-              ),
+            "div",
+            { className: "timeline-video-placeholder" },
+            h("strong", null, "No replay video available"),
+            h(
+              "span",
+              null,
+              "Upload a clip or use a run with an annotated video to sync the timeline.",
             ),
+          ),
       ),
       h(RepDetailPanel, {
         report,
@@ -1509,43 +1520,43 @@ function RepsTab({ result }) {
     ),
     reps.length
       ? h(
-          "div",
-          { className: "rep-grid" },
-          reps.map((rep) => {
-            const analysis = analysisById.get(rep.rep_id);
-            const repIssues = issuesForRep(report, rep.rep_id);
-            const score = repScore(analysis);
-            return h(
-              "article",
-              { className: `rep-card ${scoreTone(score)}`, key: rep.rep_id },
-              h(
-                "div",
-                { className: "rep-card-head" },
-                h("strong", null, `Rep ${rep.rep_id}`),
-                metaChip(
-                  score === null ? "no score" : percent(score),
-                  scoreTone(score),
-                ),
+        "div",
+        { className: "rep-grid" },
+        reps.map((rep) => {
+          const analysis = analysisById.get(rep.rep_id);
+          const repIssues = issuesForRep(report, rep.rep_id);
+          const score = repScore(analysis);
+          return h(
+            "article",
+            { className: `rep-card ${scoreTone(score)}`, key: rep.rep_id },
+            h(
+              "div",
+              { className: "rep-card-head" },
+              h("strong", null, `Rep ${rep.rep_id}`),
+              metaChip(
+                score === null ? "no score" : percent(score),
+                scoreTone(score),
               ),
-              h("span", null, timeRange(rep.start_sec, rep.end_sec)),
-              h("span", null, `frames ${rep.start_frame}-${rep.end_frame}`),
-              h("span", null, `midpoint ${rep.mid_sec.toFixed(2)}s`),
-              h(
-                "div",
-                { className: "pill-row compact" },
-                repIssues.length
-                  ? repIssues.map((issue, index) =>
-                      metaChip(
-                        issueTitle(issue),
-                        `${severityLevel(issue)}`,
-                        `${issue.issue}-${index}`,
-                      ),
-                    )
-                  : metaChip("no issue marker", "strong"),
-              ),
-            );
-          }),
-        )
+            ),
+            h("span", null, timeRange(rep.start_sec, rep.end_sec)),
+            h("span", null, `frames ${rep.start_frame}-${rep.end_frame}`),
+            h("span", null, `midpoint ${rep.mid_sec.toFixed(2)}s`),
+            h(
+              "div",
+              { className: "pill-row compact" },
+              repIssues.length
+                ? repIssues.map((issue, index) =>
+                  metaChip(
+                    issueTitle(issue),
+                    `${severityLevel(issue)}`,
+                    `${issue.issue}-${index}`,
+                  ),
+                )
+                : metaChip("no issue marker", "strong"),
+            ),
+          );
+        }),
+      )
       : h("p", null, "No complete reps were detected."),
   );
 }
@@ -1687,57 +1698,57 @@ function IssuesTab({ result }) {
     ),
     issues.length
       ? h(
-          "div",
-          { className: "issue-card-grid" },
-          issues.map((issue, index) =>
+        "div",
+        { className: "issue-card-grid" },
+        issues.map((issue, index) =>
+          h(
+            "article",
+            {
+              className: `issue-card issue-card-feature ${severityLevel(issue)}`,
+              key: `${issue.rep_id}-${issue.issue}-${index}`,
+            },
+            h(IssueMedia, { result, issue, index }),
             h(
-              "article",
-              {
-                className: `issue-card issue-card-feature ${severityLevel(issue)}`,
-                key: `${issue.rep_id}-${issue.issue}-${index}`,
-              },
-              h(IssueMedia, { result, issue, index }),
+              "div",
+              { className: "issue-body" },
               h(
                 "div",
-                { className: "issue-body" },
+                { className: "issue-card-head" },
                 h(
-                  "div",
-                  { className: "issue-card-head" },
-                  h(
-                    "span",
-                    { className: `severity-chip ${severityLevel(issue)}` },
-                    severityText(issue),
-                  ),
-                  h("strong", null, issueTitle(issue)),
-                  h("small", null, issueClipText(result, issue, index)),
+                  "span",
+                  { className: `severity-chip ${severityLevel(issue)}` },
+                  severityText(issue),
                 ),
-                h("p", null, issueEvidence(issue)),
+                h("strong", null, issueTitle(issue)),
+                h("small", null, issueClipText(result, issue, index)),
+              ),
+              h("p", null, issueEvidence(issue)),
+              h(
+                "div",
+                { className: "timeline-meta" },
                 h(
-                  "div",
-                  { className: "timeline-meta" },
-                  h(
+                  "span",
+                  null,
+                  `issue ${timeRange(issue.start_sec, issue.end_sec)}`,
+                ),
+                h(
+                  "span",
+                  null,
+                  `evidence ${percent(issue.evidence?.confidence)}`,
+                ),
+                h("span", null, issueFocus(issue)),
+                issue.affected_joints.length
+                  ? h(
                     "span",
                     null,
-                    `issue ${timeRange(issue.start_sec, issue.end_sec)}`,
-                  ),
-                  h(
-                    "span",
-                    null,
-                    `evidence ${percent(issue.evidence?.confidence)}`,
-                  ),
-                  h("span", null, issueFocus(issue)),
-                  issue.affected_joints.length
-                    ? h(
-                        "span",
-                        null,
-                        `joints ${issue.affected_joints.map(label).join(", ")}`,
-                      )
-                    : null,
-                ),
+                    `joints ${issue.affected_joints.map(label).join(", ")}`,
+                  )
+                  : null,
               ),
             ),
           ),
-        )
+        ),
+      )
       : h("p", null, "No sustained threshold violations were found."),
   );
 }
@@ -1760,18 +1771,18 @@ function ArtifactsTab({ result }) {
       { className: "artifact-links" },
       links.length
         ? links.map((artifact) =>
-            h(
-              "a",
-              {
-                className: "artifact-link",
-                key: artifact.url,
-                href: artifact.url,
-                download: artifact.name,
-              },
-              artifact.name,
-              h("span", null, "download"),
-            ),
-          )
+          h(
+            "a",
+            {
+              className: "artifact-link",
+              key: artifact.url,
+              href: artifact.url,
+              download: artifact.name,
+            },
+            artifact.name,
+            h("span", null, "download"),
+          ),
+        )
         : h("p", null, "Artifacts appear after analysis."),
     ),
     h(
