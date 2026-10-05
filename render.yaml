@@ -1,31 +1,34 @@
 services:
   - type: web
     name: spotter
-    env: python
-    runtime: python-3.10
-    plan: 1c-2g
+    runtime: python
+    plan: standard
     region: oregon
     buildCommand: |
       pip install --upgrade pip
       pip install -r requirements.txt
-    startCommand: |
-      python -c "
-import os
-os.environ.setdefault('SPOTTER_MAX_UPLOAD_BYTES', '209715200')
-os.environ.setdefault('SPOTTER_DEMO_CACHE', '1')
-import app
-" && uvicorn app:server --host 0.0.0.0 --port $PORT --timeout-keep-alive 120
+    startCommand: uvicorn app:server --host 0.0.0.0 --port $PORT --timeout-keep-alive 120
     healthCheckPath: /healthz
     disk:
       name: spotter-runs
       mountPath: /opt/render/project/src/runs
       sizeGB: 1
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.13
+      - key: SPOTTER_MAX_UPLOAD_BYTES
+        value: "209715200"
+      - key: SPOTTER_DEMO_CACHE
+        value: "1"
+      - key: SPOTTER_HISTORY_DB
+        value: /opt/render/project/src/runs/history.db
       - key: ELEVENLABS_API_KEY
         sync: false
       - key: BACKBOARD_API_KEY
         sync: false
       - key: TINKER_API_KEY
+        sync: false
+      - key: HF_TOKEN
         sync: false
       - key: SPOTTER_COACH_SUMMARY_PROVIDER
         sync: false
@@ -59,11 +62,3 @@ import app
         sync: false
       - key: SPOTTER_PLAN_BACKEND
         sync: false
-      - key: HF_TOKEN
-        sync: false
-      - key: SPOTTER_MAX_UPLOAD_BYTES
-        sync: false
-      - key: SPOTTER_DEMO_CACHE
-        sync: false
-      - key: SPOTTER_HISTORY_DB
-        value: /opt/render/project/src/runs/history.db
