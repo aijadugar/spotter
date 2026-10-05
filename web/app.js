@@ -45,6 +45,11 @@ function App() {
         body: formData,
       });
       const data = await response.json();
+      if (!response.ok) {
+        setError(data.detail || "Analysis failed");
+        setStatus("error");
+        return;
+      }
       if (data.annotated_video_url) {
         setVideoSrc(data.annotated_video_url);
       }
