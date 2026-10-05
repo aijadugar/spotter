@@ -450,12 +450,17 @@ def _run_analysis_pipeline(
     profile_input: dict[str, Any],
     bypass_verifier: bool = True,
     progress: Any | None = None,
+    *,
+    voice_coach: bool = False,
+    tts_language: str = "en",
 ) -> dict[str, Any]:
     return run_pipeline(
         video_path=video_path,
         profile_input=profile_input,
         bypass_verifier=bypass_verifier,
         progress=progress,
+        voice_coach=voice_coach,
+        tts_language=tts_language,
     )
 
 
