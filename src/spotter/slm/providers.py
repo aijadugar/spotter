@@ -40,6 +40,8 @@ LLAMA_CPP_ALIASES = {
     "llama_server",
     "llama-server",
 }
+TINKER_PROVIDER = "tinker"
+TINKER_ALIASES = {TINKER_PROVIDER}
 
 _LOCAL_TRANSFORMERS_CACHE: dict[str, tuple[Any, Any]] = {}
 _COACH_SUMMARY_SINGLETON: Any = None
@@ -494,6 +496,81 @@ class LlamaCppServerCoachSummaryModel:
         )
 
 
+class TinkerCoachSummaryModel:
+    """Tinker sampling client for progress plan generation."""
+    def __init__(
+        self,
+        *,
+        model: str = "Qwen/Qwen3.5-4B",
+        max_tokens: int = 700,
+        temperature: float = 0.1,
+    ) -> None:
+        self.model = model
+        self.max_tokens = max_tokens
+        self.temperature = temperature
+        self._sampling_client = None
+        self._tokenizer = None
+
+        # Validate API key at init time
+        api_key = os.getenv("TINKER_API_KEY")
+        if not api_key:
+            raise RuntimeError("TINKER_API_KEY is required for Tinker provider")
+
+        # Try to import tinker and create client
+        try:
+            import tinker
+            from tinker import types
+
+            service_client = tinker.ServiceClient()
+            self._sampling_client = service_client.create_sampling_client(base_model=self.model)
+            self._tokenizer = self._sampling_client.get_tokenizer()
+        except ImportError as exc:
+            raise RuntimeError("tinker SDK is required for Tinker provider") from exc
+        except Exception as exc:
+            raise RuntimeError(f"Failed to create Tinker client: {exc}") from exc
+
+    def _get_client(self):
+        if self._sampling_client is not None:
+            return self._sampling_client
+        raise RuntimeError("Tinker client not initialized")
+
+    def generate_summary(self, prompt: str) -> CoachSummaryGeneration:
+        import asyncio
+        client = self._get_client()
+        from tinker import types
+
+        prompt_tokens = self._tokenizer.encode(prompt)
+        model_input = types.ModelInput.from_ints(tokens=prompt_tokens)
+        params = types.SamplingParams(
+            max_tokens=self.max_tokens,
+            temperature=self.temperature,
+            stop=["}"],
+        )
+
+        # Run async sample in sync context
+        async def _sample():
+            result = await client.sample_async(
+                prompt=model_input,
+                num_samples=1,
+                sampling_params=params,
+            )
+            return result
+
+        result = asyncio.run(_sample())
+        generated_tokens = result.sequences[0].tokens
+        text = self._tokenizer.decode(generated_tokens)
+
+        # Ensure JSON is complete (add closing brace if needed)
+        if not text.strip().endswith("}"):
+            text = text.strip() + "}"
+
+        return CoachSummaryGeneration(
+            text=text,
+            provider=TINKER_PROVIDER,
+            model=self.model,
+        )
+
+
 def get_coach_summary_model() -> CoachSummaryModel | None:
     """Get coach summary model as a singleton, reloading only if config changes."""
     global _COACH_SUMMARY_SINGLETON, _COACH_SUMMARY_CONFIG_KEY
@@ -558,6 +635,21 @@ def get_coach_summary_model() -> CoachSummaryModel | None:
             )
             _COACH_SUMMARY_CONFIG_KEY = config_key
             return _COACH_SUMMARY_SINGLETON
+
+        if provider in TINKER_ALIASES:
+            try:
+                _COACH_SUMMARY_SINGLETON = TinkerCoachSummaryModel(
+                    model=os.getenv(MODEL_ENV, "Qwen/Qwen3.5-4B"),
+                    max_tokens=_env_int(MAX_TOKENS_ENV, 700),
+                    temperature=_env_float(TEMPERATURE_ENV, 0.1),
+                )
+                _COACH_SUMMARY_CONFIG_KEY = config_key
+                return _COACH_SUMMARY_SINGLETON
+            except Exception as exc:
+                # Fall back to deterministic planner on any error
+                _COACH_SUMMARY_SINGLETON = None
+                _COACH_SUMMARY_CONFIG_KEY = config_key
+                return None
 
         if env_truthy(os.getenv(DISABLE_REMOTE_ENV)):
             _COACH_SUMMARY_SINGLETON = None
