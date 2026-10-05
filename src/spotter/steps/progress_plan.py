@@ -6,7 +6,7 @@ import os
 from typing import Any, Protocol
 
 from spotter.contracts import ProgressPlan, SessionRecord
-from spotter.steps.progress_insight import compare_sessions, compute_trend_over_sessions
+from spotter.steps.progress_insight import compare_sessions, compute_trend_over_sessions, format_comparison_for_plan
 
 PROGRESS_PLAN_PROVIDER_ENV = "SPOTTER_PROGRESS_PLAN_PROVIDER"
 
