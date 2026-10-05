@@ -22,13 +22,43 @@
     >
       A+
     </button>
-    <div id="root"></div>
+    <div id="root">
+      <div style="padding: 40px 20px; text-align: center; color: var(--muted);">
+        <div style="font-size: 1.5rem; margin-bottom: 16px;">🏋️</div>
+        <div>Loading Spotter...</div>
+        <div style="font-size: 0.8rem; margin-top: 8px;">Initializing React app</div>
+      </div>
+    </div>
     <script>
-      document.getElementById("large-text-toggle").addEventListener("click", function () {
-        var root = document.documentElement;
-        root.style.fontSize = root.style.fontSize === "20px" ? "" : "20px";
-      });
-    </script>
-    <script type="module" src="/static/app.js?v=20260614-modular-app"></script>
+  document.getElementById("large-text-toggle").addEventListener("click", function () {
+    var root = document.documentElement;
+    root.style.fontSize = root.style.fontSize === "20px" ? "" : "20px";
+  });
+
+  // Debug: check if module loads
+  console.log("HTML loaded, waiting for module...");
+  window.addEventListener("load", () => {
+    console.log("Page fully loaded");
+    setTimeout(() => {
+      const root = document.getElementById("root");
+      if (root && root.innerHTML.includes("Loading Spotter")) {
+        console.error("React did not mount - root still shows loading state");
+        root.innerHTML = `
+          <div style="padding: 20px; color: #ff8b74; background: rgba(255,139,116,0.1); border: 1px solid rgba(255,139,116,0.3); border-radius: 8px; margin: 20px;">
+            <h3>React Failed to Mount</h3>
+            <p>The module loaded but React didn't replace the loading state.</p>
+            <p>Check browser console (F12) for errors.</p>
+            <pre style="background:#111;color:#d4ff5b;padding:10px;border-radius:4px;">Common issues:
+1. Module import failed - check Network tab for failed requests
+2. Syntax error in app.js - check Console tab
+3. React version mismatch - React 18.2.0 expected
+4. CORS issue with esm.sh - try local build</pre>
+          </div>
+        `;
+      }
+    }, 3000);
+  });
+</script>
+<script type="module" src="/static/app.js"></script>
   </body>
 </html>
