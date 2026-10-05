@@ -174,6 +174,7 @@ runtime.
 - Repo: [aijadugar/spotter](https://github.com/aijadugar/spotter)
 - Router model repo: [aijadugar/spotter-exercise-router](https://huggingface.co/aijadugar/spotter-exercise-router)
 - Coach-summary model repo: [aijadugar/spotter-coach-summary1](https://huggingface.co/aijadugar/spotter-coach-summary1)
+- **Render (live):** `https://spotter.onrender.com` *(deploy via `render.yaml` Blueprint)*
 
 Tools used in this build:
 

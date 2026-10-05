@@ -1,0 +1,69 @@
+services:
+  - type: web
+    name: spotter
+    env: python
+    runtime: python-3.10
+    plan: 1c-2g
+    region: oregon
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+    startCommand: |
+      python -c "
+import os
+os.environ.setdefault('SPOTTER_MAX_UPLOAD_BYTES', '209715200')
+os.environ.setdefault('SPOTTER_DEMO_CACHE', '1')
+import app
+" && uvicorn app:server --host 0.0.0.0 --port $PORT --timeout-keep-alive 120
+    healthCheckPath: /healthz
+    disk:
+      name: spotter-runs
+      mountPath: /opt/render/project/src/runs
+      sizeGB: 1
+    envVars:
+      - key: ELEVENLABS_API_KEY
+        sync: false
+      - key: BACKBOARD_API_KEY
+        sync: false
+      - key: TINKER_API_KEY
+        sync: false
+      - key: SPOTTER_COACH_SUMMARY_PROVIDER
+        sync: false
+      - key: SPOTTER_COACH_SUMMARY_MODEL
+        sync: false
+      - key: SPOTTER_COACH_SUMMARY_BASE_MODEL
+        sync: false
+      - key: SPOTTER_COACH_SUMMARY_LOCAL_MODEL_DIR
+        sync: false
+      - key: SPOTTER_COACH_SUMMARY_ADAPTER_ID
+        sync: false
+      - key: SPOTTER_COACH_SUMMARY_DISABLE_REMOTE
+        sync: false
+      - key: SPOTTER_COACH_SUMMARY_MAX_TOKENS
+        sync: false
+      - key: SPOTTER_COACH_SUMMARY_MAX_INPUT_TOKENS
+        sync: false
+      - key: SPOTTER_COACH_SUMMARY_TEMPERATURE
+        sync: false
+      - key: SPOTTER_TTS_BACKEND
+        sync: false
+      - key: ELEVENLABS_VOICE_ID
+        sync: false
+      - key: ELEVENLABS_MODEL_ID
+        sync: false
+      - key: ELEVENLABS_OUTPUT_FORMAT
+        sync: false
+      - key: SPOTTER_TTS_LANGUAGE
+        sync: false
+      - key: SPOTTER_TTS_MAX_CHARS_PER_RUN
+        sync: false
+      - key: SPOTTER_PLAN_BACKEND
+        sync: false
+      - key: HF_TOKEN
+        sync: false
+      - key: SPOTTER_MAX_UPLOAD_BYTES
+        sync: false
+      - key: SPOTTER_DEMO_CACHE
+        sync: false
+      - key: SPOTTER_HISTORY_DB
+        value: /opt/render/project/src/runs/history.db
